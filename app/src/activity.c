@@ -19,7 +19,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/sensor_event.h>
 
 #include <zmk/pm.h>
-
+#include <zmk/ble.h>
 #include <zmk/activity.h>
 
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
@@ -42,6 +42,7 @@ static uint32_t activity_last_uptime;
 
 #if IS_ENABLED(CONFIG_ZMK_SLEEP)
 #define MAX_SLEEP_MS CONFIG_ZMK_IDLE_SLEEP_TIMEOUT
+#define MAX_SLEEP_MS_CONNECTED CONFIG_ZMK_IDLE_SLEEP_TIMEOUT_CONNECTED
 #endif
 
 int raise_event(void) {
@@ -69,7 +70,16 @@ void activity_work_handler(struct k_work *work) {
     int32_t current = k_uptime_get();
     int32_t inactive_time = current - activity_last_uptime;
 #if IS_ENABLED(CONFIG_ZMK_SLEEP)
-    if (inactive_time > MAX_SLEEP_MS && !is_usb_power_present()) {
+
+    // different sleep threshold if active profile is connected
+    int32_t threshold_time;
+    if (zmk_ble_active_profile_is_connected()) {
+        threshold_time = MAX_SLEEP_MS_CONNECTED;
+    } else {
+        threshold_time = MAX_SLEEP_MS;
+    }
+
+    if (inactive_time > threshold_time && !is_usb_power_present()) {
         // Put devices in suspend power mode before sleeping
         set_state(ZMK_ACTIVITY_SLEEP);
 

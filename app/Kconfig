@@ -419,6 +419,10 @@ if ZMK_SLEEP
 config PM_DEVICE
     default y
 
+config ZMK_IDLE_SLEEP_TIMEOUT_CONNECTED
+    int "Milliseconds of inactivity before entering deep sleep when connected"
+    default 1800000
+
 config ZMK_IDLE_SLEEP_TIMEOUT
     int "Milliseconds of inactivity before entering deep sleep"
     default 900000

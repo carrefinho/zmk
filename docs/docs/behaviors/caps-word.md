@@ -7,7 +7,9 @@ sidebar_label: Caps Word
 
 The caps word behavior behaves similar to a caps lock, but will automatically deactivate when any key not in a continue list is pressed, or if the caps word key is pressed again. For smaller keyboards using [mod-taps](/docs/behaviors/mod-tap), this can help avoid repeated alternating holds when typing words in all caps.
 
-The modifiers are applied only to the alphabetic (`A` to `Z`) keycodes, to avoid automatically applying them to numeric values, etc.
+## Caps Word
+
+Applies shift to capitalize alphabetic keys. Remains active but does not apply shift when numeric keys, underscore, backspace, or delete are pressed.
 
 ### Behavior Binding
 
@@ -19,6 +21,30 @@ Example:
 &caps_word
 ```
 
+## Programmer Word
+
+This is identical to `&caps_word` except that shift is also applied to `MINUS`. This can be useful when programming to type certain symbols. For example, enabling `&prog_word` and typing `some-constant` results in `SOME_CONSTANT`.
+
+### Behavior Binding
+
+- Reference: `&prog_word`
+
+Example:
+
+```dts
+&prog_word
+```
+
+## Configuration
+
+### Shift List
+
+Caps word will apply shift to the following:
+
+- Alphabetic keys (`A` through `Z`).
+- Keys in the `shift-list` property (defaults to empty for `&caps_word` and `MINUS` for `&prog_word`).
+
+You can add more key codes to be shifted by overriding the `shift-list` property in your keymap:
 ### Configuration
 
 #### Continue list
@@ -27,7 +53,7 @@ By default, the caps word will remain active when any alphanumeric character or 
 
 ```dts
 &caps_word {
-    continue-list = <UNDERSCORE MINUS>;
+    shift-list = <DOT>;
 };
 
 / {
@@ -45,24 +71,26 @@ In addition, if you would like _multiple_ modifiers, instead of just `MOD_LSFT`,
 &caps_word {
     mods = <(MOD_LSFT | MOD_LALT)>;
 };
-
-/ {
-    keymap {
-        ...
-    };
-};
 ```
 
 ### Multiple Caps Breaks
 
-If you want to use multiple caps breaks with different codes to break the caps, you can add additional caps words instances to use in your keymap:
+You can add multiple caps words instances with different sets of properties in your keymap:
 
 ```dts
 / {
-    prog_caps: prog_caps {
-        compatible = "zmk,behavior-caps-word";
-        #binding-cells = <0>;
-        continue-list = <UNDERSCORE>;
+    behaviors {
+        caps_sentence: caps_sentence {
+            compatible = "zmk,behavior-caps-word";
+            #binding-cells = <0>;
+            continue-list = <SPACE>;
+        };
+
+        ctrl_word: ctrl_word {
+            compatible = "zmk,behavior-caps-word";
+            #binding-cells = <0>;
+            mods = <MOD_LCTL>;
+        };
     };
 
     keymap {

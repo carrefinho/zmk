@@ -22,7 +22,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/activity.h>
 #include <zmk/workqueue.h>
 
-static uint8_t last_state_of_charge = 0;
+static uint8_t last_state_of_charge = 101;
 
 uint8_t zmk_battery_state_of_charge(void) { return last_state_of_charge; }
 
@@ -38,6 +38,7 @@ static const struct device *battery;
 static uint8_t lithium_ion_mv_to_pct(int16_t bat_mv) {
     // Simple linear approximation of a battery based off adafruit's discharge graph:
     // https://learn.adafruit.com/li-ion-and-lipoly-batteries/voltages
+    LOG_INF("converting voltage");
 
     if (bat_mv >= 4200) {
         return 100;
@@ -90,7 +91,6 @@ static int zmk_battery_update(const struct device *battery) {
 #else
 #error "Not a supported reporting fetch mode"
 #endif
-
     if (last_state_of_charge != state_of_charge.val1) {
         last_state_of_charge = state_of_charge.val1;
 #if IS_ENABLED(CONFIG_BT_BAS)

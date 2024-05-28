@@ -5,6 +5,7 @@
  */
 
 #include <errno.h>
+#include <math.h>
 #include <zephyr/drivers/sensor.h>
 
 #include "battery_common.h"
@@ -40,4 +41,22 @@ uint8_t lithium_ion_mv_to_pct(int16_t bat_mv) {
     }
 
     return bat_mv * 2 / 15 - 459;
+}
+
+uint8_t lithium_primary_mv_to_pct(int16_t bat_mv) {
+
+    if (bat_mv >= 2900) {
+        return 100;
+    } else if (bat_mv > 2800 && bat_mv <= 2500) {
+        return 75;
+    } else if (bat_mv > 2700 && bat_mv <= 2800) {
+        return 50;
+    } else if (bat_mv > 2600 && bat_mv <= 2700) {
+        return 25;
+    } else if (bat_mv <= 2500) {
+        return 0;
+    }
+
+    return 99;
+    // return (int)(2580 * pow(bat_mv, 0.0247));
 }

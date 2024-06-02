@@ -69,13 +69,13 @@ uint8_t lithium_primary_mv_to_pct(int16_t bat_mv) {
 
     if (bat_mv >= 2900) {
         return 100;
-    } else if (bat_mv > 2800 && bat_mv <= 2500) {
+    } else if (bat_mv >= 2800 && bat_mv < 2900) {
         return 75;
-    } else if (bat_mv > 2700 && bat_mv <= 2800) {
+    } else if (bat_mv >= 2700 && bat_mv < 2800) {
         return 50;
-    } else if (bat_mv > 2600 && bat_mv <= 2700) {
+    } else if (bat_mv >= 2600 && bat_mv < 2700) {
         return 25;
-    } else if (bat_mv <= 2500) {
+    } else if (bat_mv < 2600) {
         return 0;
     }
 

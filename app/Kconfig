@@ -403,6 +403,9 @@ config ZMK_BATTERY_REPORTING_FETCH_MODE_LITHIUM_VOLTAGE
 endchoice
 endif
 
+config ZMK_BATTERY_CHEMISTRY_LITHIUM_PRIMARY
+    bool "Lithium Primary"
+
 config ZMK_IDLE_TIMEOUT
     int "Milliseconds of inactivity before entering idle state (OLED shutoff, etc)"
     default 30000

@@ -63,6 +63,11 @@ config ZMK_BEHAVIOR_HOLD_TAP_MAX_CAPTURED_EVENTS
 
 endif
 
+config ZMK_BEHAVIOR_CAPS_WORD
+    bool
+    default y
+    depends on DT_HAS_ZMK_BEHAVIOR_CAPS_WORD_ENABLED
+
 config ZMK_BEHAVIOR_KEY_TOGGLE
     bool
     default y

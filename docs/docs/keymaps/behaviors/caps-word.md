@@ -27,7 +27,7 @@ By default, the caps word will remain active when any alphanumeric character or 
 
 ```dts
 &caps_word {
-    continue-list = <UNDERSCORE MINUS>;
+    shift-list = <DOT>;
 };
 
 / {
@@ -45,24 +45,26 @@ In addition, if you would like _multiple_ modifiers, instead of just `MOD_LSFT`,
 &caps_word {
     mods = <(MOD_LSFT | MOD_LALT)>;
 };
-
-/ {
-    keymap {
-        ...
-    };
-};
 ```
 
 ### Multiple Caps Breaks
 
-If you want to use multiple caps breaks with different codes to break the caps, you can add additional caps words instances to use in your keymap:
+You can add multiple caps words instances with different sets of properties in your keymap:
 
 ```dts
 / {
-    prog_caps: prog_caps {
-        compatible = "zmk,behavior-caps-word";
-        #binding-cells = <0>;
-        continue-list = <UNDERSCORE>;
+    behaviors {
+        caps_sentence: caps_sentence {
+            compatible = "zmk,behavior-caps-word";
+            #binding-cells = <0>;
+            continue-list = <SPACE>;
+        };
+
+        ctrl_word: ctrl_word {
+            compatible = "zmk,behavior-caps-word";
+            #binding-cells = <0>;
+            mods = <MOD_LCTL>;
+        };
     };
 
     keymap {

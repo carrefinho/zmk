@@ -7,12 +7,14 @@
 #define DT_DRV_COMPAT zmk_behavior_reset
 
 #include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/reboot.h>
 #include <zephyr/logging/log.h>
 
 #include <drivers/behavior.h>
 
 #include <zmk/behavior.h>
+#include <dt-bindings/zmk/reset.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -31,7 +33,18 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
     // TODO: Correct magic code for going into DFU?
     // See
     // https://github.com/adafruit/Adafruit_nRF52_Bootloader/blob/d6b28e66053eea467166f44875e3c7ec741cb471/src/main.c#L107
+#if IS_ENABLED(CONFIG_BOARD_NRF52840DONGLE_NRF52840)
+    if (cfg->type == RST_UF2) {
+        int err;
+        err = gpio_pin_configure(DEVICE_DT_GET(DT_NODELABEL(gpio0)), 19,
+                                 GPIO_OUTPUT | GPIO_OUTPUT_INIT_LOW);
+        if (err) {
+            LOG_ERR("Failed to configure P0.19");
+        }
+    }
+#else
     sys_reboot(cfg->type);
+#endif
     return ZMK_BEHAVIOR_OPAQUE;
 }
 

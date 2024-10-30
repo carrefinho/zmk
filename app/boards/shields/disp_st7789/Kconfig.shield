@@ -1,0 +1,8 @@
+config SHIELD_DISP_ST7789_ADAFRUIT_172X320
+   def_bool $(shields_list_contains,disp_st7789_adafruit_172x320)
+
+config SHIELD_DISP_ST7789_ADAFRUIT_240X240
+   def_bool $(shields_list_contains,disp_st7789_adafruit_240x240)
+
+config SHIELD_DISP_ST7789_WAVESHARE_240X280
+   def_bool $(shields_list_contains,disp_st7789_waveshare_240x280)

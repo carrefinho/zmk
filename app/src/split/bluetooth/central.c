@@ -26,6 +26,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/split/bluetooth/uuid.h>
 #include <zmk/split/bluetooth/service.h>
 #include <zmk/event_manager.h>
+#include <zmk/events/split_central_status_changed.h>
 #include <zmk/events/position_state_changed.h>
 #include <zmk/events/sensor_event.h>
 #include <zmk/events/battery_state_changed.h>
@@ -248,7 +249,7 @@ static uint8_t split_central_notify_func(struct bt_conn *conn,
     for (int i = 0; i < POSITION_STATE_DATA_LEN; i++) {
         slot->changed_positions[i] = ((uint8_t *)data)[i] ^ slot->position_state[i];
         slot->position_state[i] = ((uint8_t *)data)[i];
-        LOG_DBG("data: %d", slot->position_state[i]);
+        // LOG_DBG("data: %d", slot->position_state[i]);
     }
 
     for (int i = 0; i < POSITION_STATE_DATA_LEN; i++) {
@@ -411,7 +412,7 @@ static uint8_t split_central_chrc_discovery_func(struct bt_conn *conn,
         return BT_GATT_ITER_STOP;
     }
 
-    LOG_DBG("[ATTRIBUTE] handle %u", attr->handle);
+    // LOG_DBG("[ATTRIBUTE] handle %u", attr->handle);
     const struct bt_uuid *chrc_uuid = ((struct bt_gatt_chrc *)attr->user_data)->uuid;
 
     if (bt_uuid_cmp(chrc_uuid, BT_UUID_DECLARE_128(ZMK_SPLIT_BT_CHAR_POSITION_STATE_UUID)) == 0) {
@@ -550,6 +551,11 @@ static void split_central_process_connection(struct bt_conn *conn) {
     LOG_DBG("New connection params: Interval: %d, Latency: %d, PHY: %d", info.le.interval,
             info.le.latency, info.le.phy->rx_phy);
 
+    LOG_DBG("***** OMG OMG PERIPHERAL CONNECTED SLOT NUMBA: %d", peripheral_slot_index_for_conn(conn));
+    raise_zmk_split_central_status_changed((struct zmk_split_central_status_changed){
+        .slot = peripheral_slot_index_for_conn(conn),
+        .connected = true,
+    });
     // Restart scanning if necessary.
     start_scanning();
 }
@@ -604,7 +610,7 @@ static bool split_central_eir_parse(struct bt_data *data, void *user_data) {
     bt_addr_le_t *addr = user_data;
     int i;
 
-    LOG_DBG("[AD]: %u data_len %u", data->type, data->data_len);
+    // LOG_DBG("[AD]: %u data_len %u", data->type, data->data_len);
 
     switch (data->type) {
     case BT_DATA_UUID128_SOME:
@@ -645,7 +651,7 @@ static void split_central_device_found(const bt_addr_le_t *addr, int8_t rssi, ui
     char dev[BT_ADDR_LE_STR_LEN];
 
     bt_addr_le_to_str(addr, dev, sizeof(dev));
-    LOG_DBG("[DEVICE]: %s, AD evt type %u, AD data len %u, RSSI %i", dev, type, ad->len, rssi);
+    // LOG_DBG("[DEVICE]: %s, AD evt type %u, AD data len %u, RSSI %i", dev, type, ad->len, rssi);
 
     /* We're only interested in connectable events */
     if (type == BT_GAP_ADV_TYPE_ADV_IND) {
@@ -722,6 +728,14 @@ static void split_central_disconnected(struct bt_conn *conn, uint8_t reason) {
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
     LOG_DBG("Disconnected: %s (reason %d)", addr, reason);
+
+    LOG_DBG("***** SADGE PERIPHERAL DISCONNECTED SLOT NUMBA: %d", peripheral_slot_index_for_conn(conn));
+    raise_zmk_split_central_status_changed((struct zmk_split_central_status_changed){
+        .slot = peripheral_slot_index_for_conn(conn),
+        .connected = false,
+    });
+
+    k_msleep(100);
 
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING)
     struct zmk_peripheral_battery_state_changed ev = {

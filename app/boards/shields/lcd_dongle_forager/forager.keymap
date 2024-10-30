@@ -1,0 +1,429 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
+
+#define BASE 0
+#define NAV  1
+#define SYM  2
+#define ADJ  3
+#define FNC  4
+#define REC  5
+
+#define AS(keycode) &as LS(keycode) keycode     // Autoshift Macro
+#define MEH LS(LC(LALT))
+#define HYP(keycode) LG(LC(LA(keycode)))
+
+/ {
+    behaviors {
+        as: auto_shift {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <250>;
+            // quick_tap_ms = <0>;
+            require-prior-idle-ms = <100>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+        ht: hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <200>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+        };
+        close: close_ht {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <300>;
+            flavor = "tap-preferred";
+            bindings = <&cmd_q>, <&kp>;
+        };
+        sabk: shift_to_alt_backspace {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp BSPC>, <&kp LA(BSPC)>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        smart_shift: smart_shift {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&sk LSHFT>, <&caps_word>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        sym_bspc: left_thumb_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <150>;
+            quick-tap-ms = <200>;
+            bindings = <&mo>, <&sabk>;
+        };
+        shot: screenshot_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <200>;
+            flavor = "balanced";
+            bindings = <&open_shotty>, <&shot_td>;
+        };
+        hrm: alpha_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&kp>, <&kp>;
+        };
+        lhm: left_homerow_mods {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <5 6 7 8 9 15 16 17 18 19 25 26 27 28 29 30 31 32 33>;
+        };
+        rhm: right_homerow_mods {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 30 31 32 33>;
+        };
+        s_ldr: left_thumb_shift_leader_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <150>;
+            quick-tap-ms = <200>;
+            bindings = <&kp>, <&trans>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        qa_tab {
+            timeout-ms = <75>;
+            key-positions = <0 10>;
+            bindings = <&kp TAB>;
+        };
+        az_esc {
+            timeout-ms = <75>;
+            key-positions = <10 20>;
+            bindings = <&kp ESC>;
+        };
+
+        // brackets
+        wr_lbkt {
+            timeout-ms = <50>;
+            key-positions = <1 11>;
+            bindings = <&kp LBKT>;
+        };
+        fs_lbrc {
+            timeout-ms = <50>;
+            key-positions = <2 12>;
+            bindings = <&kp LBRC>;
+        };
+        pt_lpar {
+            timeout-ms = <50>;
+            key-positions = <3 13>;
+            bindings = <&kp LPAR>;
+        };
+        ln_rpar {
+            timeout-ms = <50>;
+            key-positions = <6 16>;
+            bindings = <&kp RPAR>;
+        };
+        ue_rbrc {
+            timeout-ms = <50>;
+            key-positions = <7 17>;
+            bindings = <&kp RBRC>;
+        };
+        yi_rbkt {
+            timeout-ms = <50>;
+            key-positions = <8 18>;
+            bindings = <&kp RBKT>;
+        };
+        // brackets
+
+        // thumb combos
+        l_thumb {
+            timeout-ms = <50>;
+            key-positions = <30 31>;
+            bindings = <&sl FNC>;
+        };
+        r_thumb {
+            timeout-ms = <50>;
+            key-positions = <32 33>;
+            bindings = <&sl REC>;
+        };
+
+        semi_o_sqt {
+            timeout-ms = <75>;
+            key-positions = <9 19>;
+            bindings = <&kp SQT>;
+        };
+        // e_comma_lbkt {
+        //     timeout-ms = <75>;
+        //     key-positions = <17 27>;
+        //     bindings = <AS(LBKT)>;
+        // };
+        // i_period-rbkt {
+        //     timeout-ms = <75>;
+        //     key-positions = <18 28>;
+        //     bindings = <AS(RBKT)>;
+        // };
+        // io_sqt {
+        //     timeout-ms = <30>;
+        //     key-positions = <18 19>;
+        //     bindings = <&kp SQT>;
+        // };
+        // l_homerow_command {
+        //     timeout-ms = <40>;
+        //     key-positions = <10 13>;
+        //     bindings = <&sk LGUI>;
+        // };
+        l_sub_homerow_globe {
+            timeout-ms = <75>;
+            key-positions = <20 23>;
+            bindings = <&sk GLOBE>;
+        };
+        // r_homerow_option {
+        //     timeout-ms = <75>;
+        //     key-positions = <16 17>;
+        //     bindings = <&sk LALT>;
+        // };
+        bottomrightcorner_enter {
+            timeout-ms = <30>;
+            key-positions = <28 29>;
+            bindings = <&kp ENTER>;
+        };
+        r_sub_homerow_lang {
+            timeout-ms = <75>;
+            key-positions = <26 28>;
+            bindings = <&kp LC(SPACE)>;
+        };
+        // qp_close {
+        //     timeout-ms = <50>;
+        //     key-positions = <0 3>;
+        //     bindings = <&close 0 LG(W)>;
+        //     require-prior-idle-ms = <300>;
+        // };
+        // ar_selectall {
+        //     timeout-ms = <40>;
+        //     key-positions = <10 11>;
+        //     bindings = <&kp LG(A)>;
+        //     require-prior-idle-ms = <300>;
+        // };
+        // rs_refresh {
+        //     timeout-ms = <30>;
+        //     key-positions = <11 12>;
+        //     bindings = <&kp LG(R)>;
+        //     require-prior-idle-ms = <300>;
+        // };
+        // st_save {
+        //     timeout-ms = <30>;
+        //     key-positions = <12 13>;
+        //     bindings = <&kp LG(S)>;
+        //     require-prior-idle-ms = <300>;
+        // };
+        tg_newtab {
+            timeout-ms = <50>;
+            key-positions = <13 14>;
+            bindings = <&kp LG(T)>;
+        };
+        zx_undo {
+            timeout-ms = <50>;
+            key-positions = <20 21>;
+            bindings = <&kp LG(Z)>;
+        };
+        xc_cut {
+            timeout-ms = <50>;
+            key-positions = <21 22>;
+            bindings = <&kp LG(X)>;
+        };
+        cd_copy {
+            timeout-ms = <50>;
+            key-positions = <22 23>;
+            bindings = <&kp LG(C)>;
+        };
+        dv_paste {
+            timeout-ms = <50>;
+            key-positions = <23 24>;
+            bindings = <&kp LG(V)>;
+        };
+        zslash_select_line {
+            timeout-ms = <100>;
+            key-positions = <20 29>;
+            bindings = <&select_line>;
+        };
+        // bg_l3_soft_off {
+        //     timeout-ms = <50>;
+        //     layers = <3>;
+        //     key-positions = <4 14>;
+        //     bindings = <&soft_off>;
+        // };
+        qwycolon_bootloader {
+            timeout-ms = <100>;
+            key-positions = <0 1 8 9>;
+            bindings = <&bootloader>;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <1 2>;
+            then-layer = <3>;
+        };
+    };
+
+    macros {
+        select_line: select_line {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&kp HOME>
+                , <&kp LS(END)>
+                ;
+        };
+        cmd_q: command_q {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LG(Q)>;
+        };
+        open_shotty: open_shotty {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LC(LA(LG(N1)))>;
+        };
+        bnf: build_and_flash {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LG(LS(B)) &bootloader>;
+        };
+        // sleep: mac_sleep {
+        //     compatible = "zmk,behavior-macro";
+        //     #binding-cells = <0>;
+        //     tap-ms = <200>;
+        //     bindings = <&kp C_SLEEP>;
+        // };
+    };
+
+    tap_dances {
+        shot_td: screenshot_multi {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <300>;
+            bindings = <&kp LS(LG(N2))>,
+                       <&kp LS(LG(N3))>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        base {
+            display-name = "Base";
+            bindings = <
+            &kp Q           &kp W           &kp F           &kp P           &kp B                                           &kp J           &kp L           &kp U           &kp Y           AS(SEMI)
+            &kp A           &lhm LCTRL R    &lhm LALT S     &lhm LGUI T     &kp G                                           &kp M           &rhm LGUI N     &rhm LALT E     &rhm LCTRL I    &kp O
+            &kp Z           &kp X           &kp C           &kp D           &kp V                                           &kp K           &kp H           AS(COMMA)       AS(DOT)         AS(FSLH)
+                                                                            &sym_bspc 2 0   &s_ldr LSFT 0   &smart_shift    &lt NAV SPACE
+            >;
+        };
+
+        nav {
+            display-name = "Nav";
+            bindings = <
+            &trans          &trans          &trans          &trans          &trans                                          &kp PAGE_UP     &kp LC(PG_UP)   &kp UP          &kp LC(PG_DN)   &kp DELETE
+            &trans          &kp LCTRL       &kp LALT        &kp LGUI        &trans                                          &kp PAGE_DOWN   &kp LEFT        &kp DOWN        &kp RIGHT       &kp BSLH
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &kp HOME        &kp END         &kp LC(SPACE)   &kp LC(SPACE)
+                                                                            &mo SYM         &kp LSHFT       &trans          &trans
+            >;
+        };
+
+        sym {
+            display-name = "Sym";
+            bindings = <
+            AS(N1)          AS(N2)          AS(N3)          AS(N4)          AS(N5)                                          AS(N6)          AS(N7)          AS(N8)          AS(N9)          AS(N0)
+            AS(GRAVE)       &sk LCTRL       &sk LALT        &sk LGUI        &sk LC(LALT)                                    AS(BSLH)        AS(MINUS)       AS(EQUAL)       AS(LBKT)        AS(RBKT)
+            &shot 0 0       &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &kp ENTER
+                                                                            &trans          &trans          &kp LSHFT       &mo NAV
+            >;
+        };
+
+        adj {
+            display-name = "Adj";
+            bindings = <
+            &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3    &bt BT_CLR_ALL                                  &kp C_SLEEP     &trans          &trans          &kp C_BRI_DN    &kp C_BRI_UP
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &kp C_VOL_DN    &kp C_VOL_UP
+            &bootloader     &bnf            &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &bootloader
+                                                                            &trans          &trans          &trans          &trans
+            >;
+        };
+
+        fnc {
+            display-name = "Func";
+            bindings = <
+            &kp F1          &kp F2          &kp F3          &kp F4          &kp C_AC_BACK                                   &trans          &trans          &trans          &trans          &trans
+            &kp F5          &kp F6          &kp F7          &kp F8          &trans                                          &trans          &trans          &trans          &trans          &trans
+            &kp F9          &kp F10         &kp F11         &kp F12         &trans                                          &trans          &trans          &trans          &trans          &trans
+                                                                            &trans          &trans          &trans          &trans
+            >;
+        };
+
+        rec {
+            display-name = "Rect";
+            bindings = <
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+                                                                            &trans          &trans          &trans          &trans
+            >;
+        };
+
+        game {
+            display-name = "Gaming";
+            bindings = <
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+            &trans          &trans          &trans          &trans          &trans                                          &trans          &trans          &trans          &trans          &trans
+                                                                            &trans          &trans          &trans          &trans
+            >;
+        };
+    };
+};
+
+&lt {
+    // require-prior-idle-ms = <100>;
+    tapping-term-ms = <150>;
+    quick-tap-ms = <200>;
+};
+
+&mt {
+    quick-tap-ms = <200>;
+};
+
+// &caps_word {
+//     shift-list = <MINUS>;
+// };
+
+&sk {
+    release-after-ms = <500>;
+    quick-release;
+};
+
+&sl {
+    release-after-ms = <500>;
+    quick-release;
+};
+
+// &leader {
+//     timeout-ms = <500>;
+// };

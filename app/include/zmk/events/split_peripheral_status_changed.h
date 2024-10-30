@@ -10,6 +10,7 @@
 #include <zmk/event_manager.h>
 
 struct zmk_split_peripheral_status_changed {
+    uint8_t slot;
     bool connected;
 };
 

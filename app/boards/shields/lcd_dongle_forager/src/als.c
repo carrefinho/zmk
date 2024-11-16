@@ -57,7 +57,9 @@ uint8_t bl_fade(uint8_t source, uint8_t target) {
     while ((increasing && current_brightness < target) ||
            (!increasing && current_brightness > target)) {
 
-        led_set_brightness(pwm_leds_dev, DISP_BL, current_brightness);
+        if (led_set_brightness(pwm_leds_dev, DISP_BL, current_brightness)) {
+            LOG_ERR("Failed to set brightness");
+        }
 
         current_brightness += increasing ? FADE_STEP : -FADE_STEP;
 
@@ -89,9 +91,13 @@ extern void als_thread(void *d0, void *d1, void *d2) {
     }
     // LOG_INF("Got APDS9960 POGGERS!!!!!");
 
+    // led_set_brightness(pwm_leds_dev, DISP_BL, 100);
+
     while (1) {
 
         k_msleep(NORMAL_SAMPLE_SLEEP_MS);
+
+        // LOG_INF("Reading APDS9960 NOT POG");
 
         if (sensor_sample_fetch(dev)) {
             LOG_ERR("sensor_sample fetch failed\n");
@@ -101,10 +107,10 @@ extern void als_thread(void *d0, void *d1, void *d2) {
             LOG_ERR("Cannot read ALS data.\n");
         }
 
-        // LOG_INF("ambient light intensity %d", intensity.val1);
+        LOG_INF("ambient light intensity %d", intensity.val1);
 
         mapped_brightness = map_light_to_pwm(intensity.val1);
-        // LOG_INF("NORMAL: mapped PWM duty cycle %d\n", mapped_brightness);
+        LOG_INF("NORMAL: mapped PWM duty cycle %d\n", mapped_brightness);
 
         if (abs(mapped_brightness - current_brightness) > FADE_THRESHOLD) {
             uint8_t integrator = 0;
@@ -128,7 +134,7 @@ extern void als_thread(void *d0, void *d1, void *d2) {
                     if (integrator >= BURST_SAMPLE_CONSECUTIVE) {
                         bl_fade(current_brightness, mapped_brightness);
                         current_brightness = mapped_brightness;
-                        LOG_INF("SETTING NEW BRIGHTNESS: %d", mapped_brightness);
+                        // LOG_INF("SETTING NEW BRIGHTNESS: %d", mapped_brightness);
                         break;
                     }
                 }

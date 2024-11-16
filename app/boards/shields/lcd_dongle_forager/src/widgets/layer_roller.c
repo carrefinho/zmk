@@ -106,6 +106,7 @@ int zmk_widget_layer_roller_init(struct zmk_widget_layer_roller *widget, lv_obj_
                 strcat(ptr, "\n");
                 ptr += strlen(ptr);
             }
+#if IS_ENABLED(CONFIG_LAYER_ROLLER_ALL_CAPS)
             // Copy and convert to uppercase character by character
             while (*layer_name) {
                 *ptr = toupper((unsigned char)*layer_name);
@@ -113,10 +114,14 @@ int zmk_widget_layer_roller_init(struct zmk_widget_layer_roller *widget, lv_obj_
                 layer_name++;
             }
             *ptr = '\0';  // Null terminate the string
+#else
+            strcat(ptr, layer_name);
+            ptr += strlen(layer_name);
+#endif
         }
     }
 
-    lv_roller_set_options(widget->obj, layer_names_buffer, LV_ROLLER_MODE_NORMAL);
+    lv_roller_set_options(widget->obj, layer_names_buffer, LV_ROLLER_MODE_INFINITE);
 
     static lv_style_t style;
     lv_style_init(&style);
@@ -125,7 +130,7 @@ int zmk_widget_layer_roller_init(struct zmk_widget_layer_roller *widget, lv_obj_
     // lv_style_set_text_letter_space(&style, 2);
     lv_style_set_border_width(&style, 0);
     lv_style_set_pad_all(&style, 0);
-    lv_obj_add_style(lv_scr_act(), &style, 0);
+    // lv_obj_add_style(lv_scr_act(), &style, 0);
 
     lv_obj_add_style(widget->obj, &style, 0);
     lv_obj_set_style_bg_opa(widget->obj, LV_OPA_TRANSP, LV_PART_SELECTED);
@@ -134,8 +139,8 @@ int zmk_widget_layer_roller_init(struct zmk_widget_layer_roller *widget, lv_obj_
     // lv_obj_set_style_text_line_space(widget->obj, 20, LV_PART_SELECTED);
     // lv_obj_set_style_text_line_space(widget->obj, 20, LV_PART_MAIN);
     lv_obj_set_style_text_font(widget->obj, &FRAC_Thin_48, LV_PART_MAIN);
-    lv_obj_set_style_text_color(widget->obj, lv_color_hex(0x707070), LV_PART_MAIN);
-    lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_color(widget->obj, lv_color_hex(0x909090), LV_PART_MAIN);
+    // lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0);
 
     lv_obj_add_event_cb(widget->obj, mask_event_cb, LV_EVENT_ALL, NULL);
 

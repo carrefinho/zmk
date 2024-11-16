@@ -58,7 +58,7 @@ lv_obj_t *zmk_display_status_screen() {
     lv_obj_align(zmk_widget_battery_bar_obj(&battery_bar_widget), LV_ALIGN_BOTTOM_MID, 0, 0);
 
     zmk_widget_layer_roller_init(&layer_roller_widget, screen);
-    lv_obj_set_size(zmk_widget_layer_roller_obj(&layer_roller_widget), 256, 160);
+    lv_obj_set_size(zmk_widget_layer_roller_obj(&layer_roller_widget), 256, 130);
     lv_obj_align(zmk_widget_layer_roller_obj(&layer_roller_widget), LV_ALIGN_CENTER, 0, -20);
 
 

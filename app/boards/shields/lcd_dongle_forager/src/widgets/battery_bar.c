@@ -18,6 +18,8 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 //     uint8_t index;
 // };
 
+bool initialized = false;
+
 struct battery_state {
     bool bat_info;
     bool peripheral_connected;
@@ -26,37 +28,41 @@ struct battery_state {
 };
 
 static void set_battery_bar_value(lv_obj_t *widget, struct battery_state state) {
-    lv_obj_t *info_container = lv_obj_get_child(widget, state.source);
-    lv_obj_t *bar = lv_obj_get_child(info_container, 0);
-    lv_bar_set_value(bar, state.level, LV_ANIM_ON);
-    lv_obj_t *num = lv_obj_get_child(info_container, 2);
-    lv_label_set_text_fmt(num, "%d", state.level);
-    if (state.level < 20) {
-        lv_obj_set_style_bg_color(bar, lv_color_hex(0xD3900F), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_grad_color(bar, lv_color_hex(0xE8AC11), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_color(bar, lv_color_hex(0x6E4E07), LV_PART_MAIN);
-        lv_obj_set_style_text_color(num, lv_color_hex(0xFFB802), 0);
-    } else {
-        lv_obj_set_style_bg_color(bar, lv_color_hex(0x909090), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_grad_color(bar, lv_color_hex(0xf0f0f0), LV_PART_INDICATOR);
-        lv_obj_set_style_bg_color(bar, lv_color_hex(0x202020), LV_PART_MAIN);
-        lv_obj_set_style_text_color(num, lv_color_hex(0xFFFFFF), 0);
+    if (initialized) {
+        lv_obj_t *info_container = lv_obj_get_child(widget, state.source);
+        lv_obj_t *bar = lv_obj_get_child(info_container, 0);
+        lv_bar_set_value(bar, state.level, LV_ANIM_ON);
+        lv_obj_t *num = lv_obj_get_child(info_container, 2);
+        lv_label_set_text_fmt(num, "%d", state.level);
+        if (state.level < 20) {
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0xD3900F), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_grad_color(bar, lv_color_hex(0xE8AC11), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x6E4E07), LV_PART_MAIN);
+            lv_obj_set_style_text_color(num, lv_color_hex(0xFFB802), 0);
+        } else {
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x909090), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_grad_color(bar, lv_color_hex(0xf0f0f0), LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(bar, lv_color_hex(0x202020), LV_PART_MAIN);
+            lv_obj_set_style_text_color(num, lv_color_hex(0xFFFFFF), 0);
+        }
     }
 }
 
 static void set_battery_bar_connected(lv_obj_t *widget, struct battery_state state) {
-    lv_obj_t *info_container = lv_obj_get_child(widget, state.source);
-    lv_obj_t *bar = lv_obj_get_child(info_container, 0);
-    lv_obj_t *nc_container = lv_obj_get_child(info_container, 1);
-    LOG_DBG("Peripheral %d %s\n", state.source,
-            state.peripheral_connected ? "connected" : "disconnected");
+    if (initialized) {
+        lv_obj_t *info_container = lv_obj_get_child(widget, state.source);
+        lv_obj_t *bar = lv_obj_get_child(info_container, 0);
+        lv_obj_t *nc_container = lv_obj_get_child(info_container, 1);
+        LOG_DBG("Peripheral %d %s\n", state.source,
+                state.peripheral_connected ? "connected" : "disconnected");
 
-    if (state.peripheral_connected) {
-        lv_obj_fade_out(nc_container, 150, 0);
-        lv_obj_fade_in(bar, 150, 250);
-    } else {
-        lv_obj_fade_out(bar, 150, 0);
-        lv_obj_fade_in(nc_container, 150, 250);
+        if (state.peripheral_connected) {
+            lv_obj_fade_out(nc_container, 150, 0);
+            lv_obj_fade_in(bar, 150, 250);
+        } else {
+            lv_obj_fade_out(bar, 150, 0);
+            lv_obj_fade_in(nc_container, 150, 250);
+        }
     }
 }
 
@@ -180,6 +186,7 @@ int zmk_widget_battery_bar_init(struct zmk_widget_battery_bar *widget, lv_obj_t 
     sys_slist_append(&widgets, &widget->node);
 
     widget_battery_bar_init();
+    initialized = true;
 
     return 0;
 }

@@ -11,7 +11,7 @@ int disp_set_orientation(void)
 		return -EIO;
 	}
 
-	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_90);
+	int ret = display_set_orientation(display, DISPLAY_ORIENTATION_ROTATED_270);
 	if (ret < 0)
 	{
 		return ret;

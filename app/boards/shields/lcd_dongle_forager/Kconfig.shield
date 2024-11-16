@@ -9,3 +9,7 @@ config FORAGER_DONGLE
 
 config FORAGER_DONGLE_LCD
     def_bool $(shields_list_contains,forager_dongle_lcd)
+
+config LAYER_ROLLER_ALL_CAPS
+    bool "Convert layer names to all caps"
+    default n

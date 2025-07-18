@@ -17,8 +17,13 @@
 		reg = <0x45>;
 		power-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
 
-		// Example configuration - customize for your use case
-		proximity-threshold = <1>;    // 0=4 counts, 1=6 counts, 2=8 counts, 3=10 counts
-		sample-rate-hz = <4>;       // 4, 8, 30, or 100 Hz
+		proximity-threshold = <6>;            // 4, 6, 8, or 10 counts
+		sample-rate-hz = <8>;               // 4, 8, 30, or 100 Hz
+		quick-release-threshold = <50>;      // 50, 100, 150, or 250 counts
+		quick-release-beta = <2>;             // 2=fast, 3=moderate, 4=moderate, 5=slow following.
+		quick-release;
+		// increase-debounce;                    // Enable increased debounce (12 in, 8 out)
+		prox-with-movement;                   // Enable prox with movement UI instead of prox/no movement
+		temperature-compensation;  // Enable temperature and interference compensation
 	};
 };

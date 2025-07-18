@@ -17,6 +17,15 @@
 struct iqs231b_config {
     struct i2c_dt_spec i2c;
     struct gpio_dt_spec power;
+    uint8_t proximity_threshold;
+    uint16_t sample_rate_hz;
+    uint16_t quick_release_threshold;
+    uint8_t quick_release_beta;
+    bool increase_debounce;
+    bool prox_with_movement;
+    uint8_t ac_filter;
+    bool temperature_compensation;
+    bool quick_release;
 };
 
 struct iqs231b_data {

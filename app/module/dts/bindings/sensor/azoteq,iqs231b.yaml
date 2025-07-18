@@ -20,14 +20,14 @@ properties:
       
   proximity-threshold:
     type: int
-    default: 1
+    default: 6
     description: |
-      Proximity detection threshold sensitivity level
-      0 = 4 counts (most sensitive)
-      1 = 6 counts (moderate)  
-      2 = 8 counts
-      3 = 10 counts (least sensitive)
-    enum: [0, 1, 2, 3]
+      Proximity detection threshold in counts
+      4 = 4 counts (most sensitive)
+      6 = 6 counts (moderate)  
+      8 = 8 counts
+      10 = 10 counts (least sensitive)
+    enum: [4, 6, 8, 10]
     
   sample-rate-hz:
     type: int
@@ -39,3 +39,64 @@ properties:
       30 = 30 Hz (57ms response time)
       100 = 100 Hz (34ms response time)
     enum: [4, 8, 30, 100]
+    
+  quick-release-threshold:
+    type: int
+    default: 100
+    description: |
+      Quick release threshold in counts
+      50 = relaxed (50 counts)
+      100 = moderate (100 counts)
+      150 = strict (150 counts)
+      250 = very strict (250 counts)
+    enum: [50, 100, 150, 250]
+    
+  quick-release-beta:
+    type: int
+    default: 2
+    description: |
+      Quick release beta (following speed) configuration
+      2 = fast following
+      3 = moderate following
+      4 = moderate following
+      5 = slow following
+    enum: [2, 3, 4, 5]
+    
+  increase-debounce:
+    type: boolean
+    description: |
+      Increase debounce filter timing
+      If not specified = 6 in, 4 out (default)
+      If specified = 12 in, 8 out (increased debounce)
+      
+  prox-with-movement:
+    type: boolean
+    description: |
+      Enable proximity with movement UI instead of proximity/no movement
+      If not specified = Prox / No movement (default)
+      If specified = Prox with movement
+      
+  ac-filter:
+    type: int
+    default: 2
+    description: |
+      AC filter level
+      0 = Filter disabled (register bits 11)
+      1 = Filter level 1 (register bits 00)
+      2 = Filter level 2 (register bits 01)
+      3 = Filter level 3 (register bits 10)
+    enum: [0, 1, 2, 3]
+    
+  temperature-compensation:
+    type: boolean
+    description: |
+      Enable temperature and interference compensation
+      If not specified = Disabled (default)
+      If specified = Enabled
+      
+  quick-release:
+    type: boolean
+    description: |
+      Enable quick release functionality
+      If not specified = Disabled (default)
+      If specified = Enabled

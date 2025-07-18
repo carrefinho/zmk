@@ -1,0 +1,24 @@
+/ {
+	chosen {
+		zmk,kscan = &kscan0;
+	};
+
+	kscan0: kscan {
+		compatible = "zmk,kscan-gpio-direct";
+		wakeup-source;
+
+		input-gpios = <&gpio0 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+	};
+};
+
+&arduino_i2c {
+	iqs231b_sensor: iqs231b@45 {
+		compatible = "azoteq,iqs231b";
+		reg = <0x45>;
+		power-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+
+		// Example configuration - customize for your use case
+		proximity-threshold = <1>;    // 0=4 counts, 1=6 counts, 2=8 counts, 3=10 counts
+		sample-rate-hz = <4>;       // 4, 8, 30, or 100 Hz
+	};
+};

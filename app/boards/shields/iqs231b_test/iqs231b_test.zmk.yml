@@ -1,0 +1,11 @@
+file_format: "1"
+id: iqs231b_test
+name: IQS231B Test Shield
+type: shield
+url: https://github.com/zmkfirmware/zmk
+requires: [nrf52840dk_nrf52840]
+exposes: [i2c]
+features:
+  - keys
+  - sensors
+siblings: []

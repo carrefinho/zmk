@@ -1,0 +1,18 @@
+menuconfig ZMK_SENSOR_IQS231B
+	bool "IQS231B proximity and touch sensor"
+	depends on DT_HAS_AZOTEQ_IQS231B_ENABLED && I2C && GPIO
+	help
+	  Enable driver for Azoteq IQS231B proximity and touch sensor.
+	  
+	  This driver requires GPIO power control to ensure reliable test mode
+	  operation. The power-gpios property must be specified in the device tree.
+
+if ZMK_SENSOR_IQS231B
+
+config ZMK_SENSOR_IQS231B_INIT_PRIORITY
+	int "Init priority"
+	default 75
+	help
+	  Device driver initialization priority.
+
+endif # ZMK_SENSOR_IQS231B

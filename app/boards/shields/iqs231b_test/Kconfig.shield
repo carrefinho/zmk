@@ -1,0 +1,3 @@
+config SHIELD_IQS231B_TEST
+	def_bool $(shields_list_contains,iqs231b_test)
+	select ZMK_SENSOR_IQS231B

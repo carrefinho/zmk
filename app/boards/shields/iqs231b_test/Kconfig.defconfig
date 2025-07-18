@@ -1,0 +1,18 @@
+if SHIELD_IQS231B_TEST
+
+config ZMK_KEYBOARD_NAME
+	default "IQS231B Test"
+
+config I2C
+	default y
+
+config ZMK_SENSOR_IQS231B
+	default y
+
+config ZMK_RTT_LOGGING
+	default y
+
+config LOG
+	default y
+
+endif

@@ -1,0 +1,41 @@
+description: |
+  Azoteq IQS231B proximity and touch sensor
+
+  This sensor requires GPIO power control to ensure reliable test mode operation.
+  The power-gpios property is mandatory to control when the sensor is powered on,
+  allowing precise timing for the 340ms test mode window.
+
+compatible: "azoteq,iqs231b"
+
+include: [sensor-device.yaml, i2c-device.yaml]
+
+properties:
+  power-gpios:
+    type: phandle-array
+    required: true
+    description: |
+      GPIO used to control power to the IQS231B sensor. This is required
+      to ensure the test mode communication window (340ms) is available
+      after sensor power-on, regardless of bootloader timing.
+      
+  proximity-threshold:
+    type: int
+    default: 1
+    description: |
+      Proximity detection threshold sensitivity level
+      0 = 4 counts (most sensitive)
+      1 = 6 counts (moderate)  
+      2 = 8 counts
+      3 = 10 counts (least sensitive)
+    enum: [0, 1, 2, 3]
+    
+  sample-rate-hz:
+    type: int
+    default: 100
+    description: |
+      Sensor sample rate in Hz
+      4 = 4 Hz (280ms response time)
+      8 = 8 Hz (154ms response time)
+      30 = 30 Hz (57ms response time)
+      100 = 100 Hz (34ms response time)
+    enum: [4, 8, 30, 100]

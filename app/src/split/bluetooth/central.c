@@ -640,7 +640,6 @@ static void do_next_subscription(struct peripheral_slot *slot) {
 
         case PERIPHERAL_SLOT_SUB_STATE_DONE:
             LOG_DBG("All subscriptions complete for peripheral");
-            k_work_submit(&update_peripherals_selected_layouts_work);
             return;
 
         default:

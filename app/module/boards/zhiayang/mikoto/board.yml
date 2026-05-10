@@ -6,9 +6,10 @@ board:
     default: 5.20.0
     exact: false
     revisions:
-      - name: 5.20.0
-      - name: 6.1.0
-      - name: 6.3.0
-      - name: 7.2.0
+    - name: 5.20.0
+    - name: 6.1.0
+    - name: 6.3.0
+    - name: 7.2.0
   socs:
-    - name: nrf52840
+  - name: nrf52840
+  full_name: mikoto

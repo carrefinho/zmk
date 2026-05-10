@@ -2,4 +2,5 @@ board:
   name: puchi_ble
   vendor: keycapsss
   socs:
-    - name: nrf52840
+  - name: nrf52840
+  full_name: puchi_ble

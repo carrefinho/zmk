@@ -2,4 +2,5 @@ board:
   name: proton_c
   vendor: qmk
   socs:
-    - name: stm32f303xc
+  - name: stm32f303xc
+  full_name: proton_c

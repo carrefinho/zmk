@@ -2,6 +2,7 @@ board:
   name: bt75
   vendor: polarityworks
   socs:
-    - name: nrf52840
-      variants:
-        - name: zmk
+  - name: nrf52840
+    variants:
+    - name: zmk
+  full_name: bt75

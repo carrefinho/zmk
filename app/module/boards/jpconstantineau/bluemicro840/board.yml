@@ -2,4 +2,5 @@ board:
   name: bluemicro840
   vendor: jpconstantineau
   socs:
-    - name: nrf52840
+  - name: nrf52840
+  full_name: bluemicro840

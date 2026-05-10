@@ -13,6 +13,13 @@ CONFIG_NRF_GRTC_START_SYSCOUNTER=y
 # MPU-based null-pointer detection is not viable on this SoC
 CONFIG_NULL_POINTER_EXCEPTION_DETECTION_NONE=y
 
+# The Nordic SoC validate_binding_headers compile re-includes every
+# dt-binding header into a single TU; ZMK's `dt-bindings/zmk/keys.h` /
+# `hid_usage_pages.h` don't survive that context (root cause TBD,
+# tracked as task #13). Disable the check via the v4.4.0+zmk-fixes
+# Kconfig option.
+CONFIG_NRF_SOC_VALIDATE_HEADERS_DISABLED=y
+
 # GPIO + serial console
 CONFIG_GPIO=y
 CONFIG_SERIAL=y

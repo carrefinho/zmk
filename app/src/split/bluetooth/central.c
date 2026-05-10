@@ -774,7 +774,7 @@ static void split_central_process_connection(struct bt_conn *conn) {
 
     bt_conn_get_info(conn, &info);
 
-    LOG_DBG("New connection params: Interval: %d, Latency: %d, PHY: %d", info.le.interval,
+    LOG_DBG("New connection params: Interval: %u us, Latency: %d, PHY: %d", info.le.interval_us,
             info.le.latency, info.le.phy->rx_phy);
 
     // Restart scanning if necessary.

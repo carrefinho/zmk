@@ -50,14 +50,14 @@ config BT_DIS_MANUF_NAME_STR
 
 # Hardware specific overrides
 
-if SOC_SERIES_NRF52X
+if SOC_SERIES_NRF52
 
 # Default on for our usage until boards implement retained bootmode.
 config NRF_STORE_REBOOT_TYPE_GPREGRET
     bool
     default y
 
-endif # SOC_SERIES_NRF52X
+endif # SOC_SERIES_NRF52
 
 menu "HID"
 
@@ -164,6 +164,11 @@ menuconfig ZMK_BLE
     select BT_SMP_APP_PAIRING_ACCEPT
     select BT_PERIPHERAL
     select BT_DIS
+    # Zephyr 4.4 dropped the BT host's transitive `select POLL`. Some ZMK
+    # subsystems (UART async, USB CDC under certain configs) still rely on
+    # k_poll being compiled in. Defensive `select` keeps existing boards
+    # building until each call site is audited.
+    select POLL
     imply BT_DEVICE_NAME_DYNAMIC
     imply BT_SETTINGS if !ARCH_POSIX
     imply SETTINGS if !ARCH_POSIX

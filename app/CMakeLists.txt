@@ -23,6 +23,12 @@ zephyr_syscall_header(${APPLICATION_SOURCE_DIR}/include/drivers/ext_power.h)
 # Add your source file to the "app" target. This must come after
 # find_package(Zephyr) which defines the target.
 target_include_directories(app PRIVATE include)
+# Also make `app/include` visible to the DTS C-preprocessor pass so
+# board overlays / keymaps can `#include <dt-bindings/zmk/...>`. The
+# v4.1.0+zmk-fixes fork did this implicitly via its post_boards_shields
+# hook; on upstream Zephyr we wire it explicitly.
+zephyr_include_directories(include)
+
 add_subdirectory(src/boot)
 target_sources(app PRIVATE src/stdlib.c)
 target_sources(app PRIVATE src/activity.c)

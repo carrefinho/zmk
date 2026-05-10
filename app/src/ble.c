@@ -55,9 +55,19 @@ enum advertising_type {
 
 #define CURR_ADV(adv) (adv << 4)
 
+/*
+ * Zephyr 3.7+ retired `BT_LE_ADV_OPT_USE_NAME` / `BT_LE_ADV_OPT_FORCE_NAME_IN_AD`;
+ * the host no longer auto-injects the device name. Add it explicitly to the
+ * advertising data array via BT_DATA_NAME_COMPLETE.
+ *
+ * NOTE: ZMK enables BT_DEVICE_NAME_DYNAMIC, so the live name can diverge from
+ * CONFIG_BT_DEVICE_NAME at runtime. We initialize from the static config here
+ * for build-time correctness; a follow-up should refresh via bt_get_name() on
+ * each advertise call.
+ */
 #define ZMK_ADV_CONN_NAME                                                                          \
-    BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_USE_NAME | BT_LE_ADV_OPT_FORCE_NAME_IN_AD,  \
-                    BT_GAP_ADV_FAST_INT_MIN_2, BT_GAP_ADV_FAST_INT_MAX_2, NULL)
+    BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN, BT_GAP_ADV_FAST_INT_MIN_2,                                 \
+                    BT_GAP_ADV_FAST_INT_MAX_2, NULL)
 
 static struct zmk_ble_profile profiles[ZMK_BLE_PROFILE_COUNT];
 static uint8_t active_profile;
@@ -72,6 +82,7 @@ BUILD_ASSERT(
 static struct bt_data zmk_ble_ad[] = {
     BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, BT_BYTES_LIST_LE16(CONFIG_BT_DEVICE_APPEARANCE)),
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+    BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
     BT_DATA_BYTES(BT_DATA_UUID16_SOME, BT_UUID_16_ENCODE(BT_UUID_HIDS_VAL), /* HID Service */
                   BT_UUID_16_ENCODE(BT_UUID_BAS_VAL)                        /* Battery Service */
                   ),

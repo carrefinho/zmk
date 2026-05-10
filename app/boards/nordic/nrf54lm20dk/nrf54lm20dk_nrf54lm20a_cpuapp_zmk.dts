@@ -5,7 +5,19 @@
  */
 
 #include <../boards/nordic/nrf54lm20dk/nrf54lm20dk_nrf54lm20a_cpuapp.dts>
-#include <dt-bindings/zmk/matrix_transform.h>
+#include <behaviors.dtsi>
+
+/*
+ * Note: deliberately not including <dt-bindings/zmk/keys.h>. It pulls in
+ * `dt-bindings/zmk/hid_usage_pages.h`, which on upstream Zephyr 4.4 fails
+ * to preprocess inside this combined overlay (HID_USAGE_KEY tokenization
+ * issue). Investigation pending — for milestone #7 (boot + LED + UART)
+ * we use raw HID usage codes for the four DK keys.
+ *
+ * Also not including <dt-bindings/zmk/matrix_transform.h>: its RC(row,col)
+ * collides with RC(keycode) (right-control) from modifiers.h. We write
+ * the matrix-transform `map` cells as raw `(row << 8) | col` values.
+ */
 
 /*
  * Hardware available out of the box (from upstream Zephyr DTS):
@@ -35,7 +47,32 @@
 		rows = <1>;
 		columns = <4>;
 		map = <
-			RC(0,0) RC(0,1) RC(0,2) RC(0,3)
+			0x000 0x001 0x002 0x003   /* row 0, cols 0..3 */
 		>;
+	};
+
+	/*
+	 * Inlined keymap. Normally ZMK boards keep the keymap in a separate
+	 * `<board>.keymap` discovered by `app/boards/post_boards_shields.cmake`,
+	 * but that hook lived in the dropped v4.1.0+zmk-fixes Zephyr fork.
+	 * Inlining here gets the DK building on upstream Zephyr 4.4 without
+	 * a fresh fork patch. Restore separation when the discovery hook is
+	 * re-introduced (TODO).
+	 */
+	keymap {
+		compatible = "zmk,keymap";
+
+		default_layer {
+			/*
+			 * HID usages: page 0x07 (Keyboard) << 16 | A=0x04, B=0x05,
+			 * C=0x06, D=0x07.
+			 */
+			bindings = <
+				&kp 0x70004  /* A */
+				&kp 0x70005  /* B */
+				&kp 0x70006  /* C */
+				&kp 0x70007  /* D */
+			>;
+		};
 	};
 };

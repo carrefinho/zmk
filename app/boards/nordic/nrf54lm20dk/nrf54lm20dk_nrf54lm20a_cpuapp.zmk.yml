@@ -1,0 +1,10 @@
+file_format: "1"
+id: nrf54lm20dk/nrf54lm20a/cpuapp/zmk
+name: Nordic nRF54LM20 DK
+type: board
+arch: arm
+outputs:
+  - usb
+  - ble
+url: https://www.nordicsemi.com/Products/Development-hardware/nRF54LM20-DK
+exposes: [arduino_uno]

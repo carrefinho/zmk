@@ -1,0 +1,35 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+# Enable MPU + hardware stack protection
+CONFIG_ARM_MPU=y
+CONFIG_HW_STACK_PROTECTION=y
+
+# nRF54L cache & system counter (mirrors upstream defconfig)
+CONFIG_CACHE_MANAGEMENT=y
+CONFIG_EXTERNAL_CACHE=y
+CONFIG_NRF_GRTC_START_SYSCOUNTER=y
+
+# MPU-based null-pointer detection is not viable on this SoC
+CONFIG_NULL_POINTER_EXCEPTION_DETECTION_NONE=y
+
+# GPIO + serial console
+CONFIG_GPIO=y
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+
+# Input subsystem (replaces kscan in 4.2+)
+CONFIG_INPUT=y
+
+# BLE HID (USB HID enabled later via board overlay; nRF54LM20 USBHS = USBD next stack)
+CONFIG_ZMK_BLE=y
+# CONFIG_ZMK_USB=y  # TODO(#9): enable once USB Device Next port lands
+
+# Settings persistence on RRAM
+# nRF54LM20 RRAM is memory-mapped (zephyr,mapped-partition); NVS works directly.
+CONFIG_NVS=y
+CONFIG_SETTINGS_NVS=y
+CONFIG_FLASH=y
+CONFIG_FLASH_PAGE_LAYOUT=y
+CONFIG_FLASH_MAP=y

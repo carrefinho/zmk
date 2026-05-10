@@ -1,0 +1,5 @@
+board:
+  extend: nrf54lm20dk
+  variants:
+    - name: zmk
+      qualifier: nrf54lm20a/cpuapp

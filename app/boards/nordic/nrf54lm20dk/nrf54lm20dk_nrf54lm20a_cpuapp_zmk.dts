@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2026 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <../boards/nordic/nrf54lm20dk/nrf54lm20dk_nrf54lm20a_cpuapp.dts>
+
+/*
+ * Hardware available out of the box (from upstream Zephyr DTS):
+ *   - LEDs:   led0..led3 (P1.22, P1.25, P1.27, P1.28)
+ *   - Buttons: button0..button3 with zephyr,code = INPUT_KEY_0..3,
+ *              wired via gpio-keys (input subsystem).
+ *   - UART:   uart20 / uart30 at 115200, console on uart20.
+ *   - PWM:    pwm20 driving pwm_led1.
+ *
+ * ZMK glue is intentionally minimal at this stage. To wire the DK buttons
+ * into ZMK's keymap pipeline we need either:
+ *   (a) the kscan->input port (task #3) to land first, after which an
+ *       `zmk,input-listener` over `&buttons` plus a 4-position matrix
+ *       transform is sufficient; or
+ *   (b) a small temporary "input-event -> kscan-position" shim under
+ *       app/module/drivers/kscan/.
+ *
+ * We deliberately leave `chosen { zmk,kscan = ... }` unset until (a) lands,
+ * so a build of this board produces a no-keymap image good for milestone
+ * #7 (boot + UART log + LED blink) without forcing the kscan port.
+ */

@@ -8,7 +8,6 @@
 
 #include <zephyr/devicetree.h>
 
-#define ZMK_MATRIX_NODE_ID DT_CHOSEN(zmk_kscan)
 #define ZMK_MATRIX_HAS_TRANSFORM DT_HAS_CHOSEN(zmk_matrix_transform)
 
 #if DT_HAS_COMPAT_STATUS_OKAY(zmk_physical_layout)
@@ -24,7 +23,22 @@
 #define ZMK_KEYMAP_TRANSFORM_NODE DT_CHOSEN(zmk_matrix_transform)
 #define ZMK_KEYMAP_LEN DT_PROP_LEN(ZMK_KEYMAP_TRANSFORM_NODE, map)
 
-#else /* DT_HAS_CHOSEN(zmk_matrix_transform) */
+#elif DT_HAS_CHOSEN(zmk_matrix_input)
+
+#define ZMK_MATRIX_INPUT_NODE DT_CHOSEN(zmk_matrix_input)
+#if DT_NODE_HAS_PROP(ZMK_MATRIX_INPUT_NODE, row_size)
+#define ZMK_MATRIX_ROWS DT_PROP(ZMK_MATRIX_INPUT_NODE, row_size)
+#define ZMK_MATRIX_COLS DT_PROP(ZMK_MATRIX_INPUT_NODE, col_size)
+#elif DT_NODE_HAS_COMPAT(ZMK_MATRIX_INPUT_NODE, gpio_keys)
+#define ZMK_MATRIX_ROWS 1
+#define ZMK_MATRIX_COLS DT_CHILD_NUM_STATUS_OKAY(ZMK_MATRIX_INPUT_NODE)
+#endif
+
+#define ZMK_KEYMAP_LEN (ZMK_MATRIX_COLS * ZMK_MATRIX_ROWS)
+
+#elif IS_ENABLED(CONFIG_ZMK_KSCAN_LEGACY) && DT_HAS_CHOSEN(zmk_kscan)
+
+#define ZMK_MATRIX_NODE_ID DT_CHOSEN(zmk_kscan)
 
 #if DT_NODE_HAS_PROP(ZMK_MATRIX_NODE_ID, row_gpios)
 #define ZMK_MATRIX_ROWS DT_PROP_LEN(ZMK_MATRIX_NODE_ID, row_gpios)
@@ -39,4 +53,4 @@
 
 #define ZMK_KEYMAP_LEN (ZMK_MATRIX_COLS * ZMK_MATRIX_ROWS)
 
-#endif /* !DT_HAS_CHOSEN(zmk_matrix_transform) */
+#endif

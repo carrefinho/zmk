@@ -59,7 +59,9 @@ struct zmk_matrix_transform {
 
 DT_INST_FOREACH_STATUS_OKAY(MATRIX_TRANSFORM_INIT);
 
-#elif DT_HAS_CHOSEN(zmk_kscan) && defined(ZMK_MATRIX_COLS) && defined(ZMK_MATRIX_ROWS)
+#elif (UTIL_OR(DT_HAS_CHOSEN(zmk_matrix_input),                                                    \
+               UTIL_AND(IS_ENABLED(CONFIG_ZMK_KSCAN_LEGACY), DT_HAS_CHOSEN(zmk_kscan)))) &&        \
+    defined(ZMK_MATRIX_COLS) && defined(ZMK_MATRIX_ROWS)
 
 const struct zmk_matrix_transform zmk_matrix_transform_default = {
     .rows = ZMK_MATRIX_ROWS,
@@ -69,8 +71,8 @@ const struct zmk_matrix_transform zmk_matrix_transform_default = {
 
 #else
 
-#error "Need a matrix transform or compatible kscan selected to determine keymap size!"
-`
+#error "Need a matrix transform, a chosen zmk,matrix-input source, or (with CONFIG_ZMK_KSCAN_LEGACY) a chosen zmk,kscan to determine keymap size!"
+
 #endif // DT_HAS_COMPAT_STATUS_OKAY(zmk_matrix_transform)
 
 int32_t zmk_matrix_transform_row_column_to_position(zmk_matrix_transform_t mt, uint32_t row,

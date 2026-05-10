@@ -5,6 +5,7 @@
  */
 
 #include <../boards/nordic/nrf54lm20dk/nrf54lm20dk_nrf54lm20a_cpuapp.dts>
+#include <dt-bindings/zmk/matrix_transform.h>
 
 /*
  * Hardware available out of the box (from upstream Zephyr DTS):
@@ -12,17 +13,29 @@
  *   - Buttons: button0..button3 with zephyr,code = INPUT_KEY_0..3,
  *              wired via gpio-keys (input subsystem).
  *   - UART:   uart20 / uart30 at 115200, console on uart20.
- *   - PWM:    pwm20 driving pwm_led1.
  *
- * ZMK glue is intentionally minimal at this stage. To wire the DK buttons
- * into ZMK's keymap pipeline we need either:
- *   (a) the kscan->input port (task #3) to land first, after which an
- *       `zmk,input-listener` over `&buttons` plus a 4-position matrix
- *       transform is sufficient; or
- *   (b) a small temporary "input-event -> kscan-position" shim under
- *       app/module/drivers/kscan/.
- *
- * We deliberately leave `chosen { zmk,kscan = ... }` unset until (a) lands,
- * so a build of this board produces a no-keymap image good for milestone
- * #7 (boot + UART log + LED blink) without forcing the kscan port.
+ * ZMK consumes the upstream `&buttons` gpio-keys node directly through
+ * its post-4.2 input bridge (chosen zmk,matrix-input). A 1x4 transform
+ * maps the four push-buttons to keymap positions 0..3.
  */
+
+/*
+ * Upstream `nrf54lm20dk_common.dtsi` declares the gpio-keys node as
+ * anonymous `buttons {}` with no DT label. Reference by path in `chosen`.
+ */
+
+/ {
+	chosen {
+		zmk,matrix-input = &{/buttons};
+		zmk,matrix-transform = &dk_transform;
+	};
+
+	dk_transform: dk_transform {
+		compatible = "zmk,matrix-transform";
+		rows = <1>;
+		columns = <4>;
+		map = <
+			RC(0,0) RC(0,1) RC(0,2) RC(0,3)
+		>;
+	};
+};

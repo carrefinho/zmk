@@ -16,6 +16,19 @@ config ZMK_BOARD_COMPAT
       used a ZMK variant of an upstream board, or are using a board
       properly migrated to a newer ZMK version.
 
+config ZMK_KSCAN_LEGACY
+    bool "Compile legacy <zephyr/drivers/kscan.h> code paths"
+    default n
+    help
+      Zephyr removed the kscan subsystem in 4.2 in favor of the input
+      subsystem. ZMK is migrating its drivers and bridge code to consume
+      `INPUT_EV_*` events via `zmk,matrix-input` instead. Boards that
+      still rely on the old kscan callback path (drivers under
+      app/module/drivers/kscan/ that haven't been ported yet) can opt in
+      by setting this to y. Note: enabling this on its own does NOT make
+      the legacy boards build, since `<zephyr/drivers/kscan.h>` no longer
+      exists upstream — the legacy ZMK drivers must also be ported.
+
 menu "Basic Keyboard Setup"
 
 config ZMK_KEYBOARD_NAME

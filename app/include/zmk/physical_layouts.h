@@ -32,7 +32,9 @@ struct zmk_physical_layout {
     const char *display_name;
 
     zmk_matrix_transform_t matrix_transform;
+#if IS_ENABLED(CONFIG_ZMK_KSCAN_LEGACY)
     const struct device *kscan;
+#endif
 #if IS_ENABLED(CONFIG_INPUT)
     const struct device *input;
 #endif

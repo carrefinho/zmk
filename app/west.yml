@@ -4,10 +4,12 @@ manifest:
       url-base: https://github.com/zephyrproject-rtos
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: carrefinho
+      url-base: https://github.com/carrefinho
   projects:
     - name: zephyr
-      remote: zephyrproject-rtos
-      revision: v4.4.0
+      remote: carrefinho
+      revision: v4.4.0+zmk-fixes
       clone-depth: 1
       import:
         name-blocklist:

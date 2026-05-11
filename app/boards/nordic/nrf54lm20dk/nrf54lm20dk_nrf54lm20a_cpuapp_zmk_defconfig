@@ -26,6 +26,11 @@ CONFIG_SERIAL=y
 CONFIG_CONSOLE=y
 CONFIG_UART_CONSOLE=y
 
+# Logging on UART. Minimal mode keeps overhead low.
+CONFIG_LOG=y
+CONFIG_LOG_MODE_MINIMAL=y
+CONFIG_ZMK_LOG_LEVEL_DBG=y
+
 # Input subsystem (replaces kscan in 4.2+)
 CONFIG_INPUT=y
 
@@ -33,10 +38,14 @@ CONFIG_INPUT=y
 CONFIG_ZMK_BLE=y
 # CONFIG_ZMK_USB=y  # TODO(#9): enable once USB Device Next port lands
 
-# Settings persistence on RRAM
-# nRF54LM20 RRAM is memory-mapped (zephyr,mapped-partition); NVS works directly.
-CONFIG_NVS=y
-CONFIG_SETTINGS_NVS=y
+# Settings persistence on RRAM.
+# nRF54LM20 RRAM exposes a flash-API shim (compatible = "soc-nv-flash"), so
+# NVS technically works, but it does pointless erase-before-write bookkeeping
+# on a medium that doesn't need it. ZMS is the right backend for non-flash
+# NVMs and Nordic recommends it for nRF54L. The settings subsystem picks
+# `SETTINGS_ZMS` automatically when `CONFIG_ZMS=y`.
+CONFIG_ZMS=y
+CONFIG_SETTINGS_ZMS=y
 CONFIG_FLASH=y
 CONFIG_FLASH_PAGE_LAYOUT=y
 CONFIG_FLASH_MAP=y

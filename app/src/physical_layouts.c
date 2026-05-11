@@ -255,13 +255,38 @@ static void zmk_physical_layout_input_event_cb(struct input_event *evt, void *us
         }
         break;
     case INPUT_EV_KEY:
-        switch (evt->code) {
-        case INPUT_BTN_TOUCH:
+        if (evt->code == INPUT_BTN_TOUCH) {
+            /* gpio-kbd-matrix-style: ABS_X/Y carries row/col, BTN_TOUCH carries
+             * state, commit happens on sync. */
             pending_input_event.state =
                 (evt->value ? ZMK_KSCAN_EVENT_STATE_PRESSED : ZMK_KSCAN_EVENT_STATE_RELEASED);
-            break;
-        default:
-            LOG_WRN("Unknown key code");
+        } else {
+            /* gpio-keys-style: each child emits a self-contained INPUT_EV_KEY
+             * with its `zephyr,code`. Translate the code back to a flat column
+             * index by looking it up in a compile-time table built from the
+             * children of `chosen zmk,matrix-input`. Each event is its own
+             * sync; dispatch immediately. */
+#if DT_HAS_CHOSEN(zmk_matrix_input)
+#define ZMK_GPIO_KEY_CODE(node) DT_PROP_OR(node, zephyr_code, 0),
+            static const uint16_t code_to_col[] = {
+                DT_FOREACH_CHILD_STATUS_OKAY(DT_CHOSEN(zmk_matrix_input), ZMK_GPIO_KEY_CODE)
+            };
+#undef ZMK_GPIO_KEY_CODE
+            for (size_t i = 0; i < ARRAY_SIZE(code_to_col); i++) {
+                if (code_to_col[i] == evt->code) {
+                    struct zmk_kscan_event ev = {
+                        .row = 0,
+                        .column = (uint32_t)i,
+                        .state = (evt->value ? ZMK_KSCAN_EVENT_STATE_PRESSED
+                                             : ZMK_KSCAN_EVENT_STATE_RELEASED),
+                    };
+                    k_msgq_put(&physical_layouts_kscan_msgq, &ev, K_NO_WAIT);
+                    k_work_submit(&msg_processor.work);
+                    return;
+                }
+            }
+#endif
+            LOG_WRN("Unknown key code 0x%x", evt->code);
             return;
         }
         break;

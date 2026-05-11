@@ -36,6 +36,11 @@ CONFIG_INPUT=y
 
 # BLE HID (USB HID enabled later via board overlay; nRF54LM20 USBHS = USBD next stack)
 CONFIG_ZMK_BLE=y
+
+# Identifiable name for BLE advertising / USB descriptors.
+# Without this, BT_DEVICE_NAME is empty and macOS hides the device
+# from its Bluetooth menu.
+CONFIG_ZMK_KEYBOARD_NAME="ZMK LM20 DK"
 # CONFIG_ZMK_USB=y  # TODO(#9): enable once USB Device Next port lands
 
 # Settings persistence on RRAM.

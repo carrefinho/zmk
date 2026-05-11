@@ -34,14 +34,14 @@ CONFIG_ZMK_LOG_LEVEL_DBG=y
 # Input subsystem (replaces kscan in 4.2+)
 CONFIG_INPUT=y
 
-# BLE HID (USB HID enabled later via board overlay; nRF54LM20 USBHS = USBD next stack)
+# HID transports. USB rides USBD-next on this SoC (DWC2 USBHS).
 CONFIG_ZMK_BLE=y
+CONFIG_ZMK_USB=y
 
 # Identifiable name for BLE advertising / USB descriptors.
 # Without this, BT_DEVICE_NAME is empty and macOS hides the device
 # from its Bluetooth menu.
 CONFIG_ZMK_KEYBOARD_NAME="ZMK LM20 DK"
-# CONFIG_ZMK_USB=y  # TODO(#9): enable once USB Device Next port lands
 
 # Settings persistence on RRAM.
 # nRF54LM20 RRAM exposes a flash-API shim (compatible = "soc-nv-flash"), so

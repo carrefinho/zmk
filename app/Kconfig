@@ -147,25 +147,22 @@ menu "Output Types"
 config ZMK_USB
     bool "USB"
     depends on (!ZMK_SPLIT || (ZMK_SPLIT && ZMK_SPLIT_ROLE_CENTRAL))
-    select USB
-    select USB_DEVICE_STACK
-    select USB_DEVICE_HID
+    select USB_DEVICE_STACK_NEXT
+    # USBD_HID_SUPPORT auto-enables when a `zephyr,hid-device` DT
+    # node is present; don't force-select it (Kconfig would warn).
 
 config ZMK_USB_BOOT
     bool "USB Boot Protocol Support"
     depends on ZMK_USB
-    select USB_HID_BOOT_PROTOCOL
-
-config USB_DEVICE_INITIALIZE_AT_BOOT
-    default n
+    # USBD-next has no global Kconfig for boot protocol; boot behavior is
+    # driven by the `protocol-code = "keyboard"` property on the
+    # `zephyr,hid-device` DT node + a non-NULL `set_protocol` op.
 
 if ZMK_USB
 
-config USB_NUMOF_EP_WRITE_RETRIES
-    default 10
-
-config USB_HID_POLL_INTERVAL_MS
-    default 1
+# Polling interval and EP write retries are no longer Kconfig in
+# USBD-next. Polling moves to `in-polling-period-us` on the DT
+# `zephyr,hid-device` node; retry behavior is handled internally.
 
 endif # ZMK_USB
 
@@ -359,7 +356,7 @@ config ZMK_RGB_UNDERGLOW_AUTO_OFF_IDLE
 
 config ZMK_RGB_UNDERGLOW_AUTO_OFF_USB
     bool "Turn off RGB underglow when USB is disconnected"
-    depends on USB_DEVICE_STACK
+    depends on USB_DEVICE_STACK_NEXT
 
 endif # ZMK_RGB_UNDERGLOW
 
@@ -424,7 +421,6 @@ config ZMK_SLEEP
     depends on HAS_POWEROFF
     select POWEROFF
     select ZMK_PM_DEVICE_SUSPEND_RESUME
-    imply USB
 
 if ZMK_SLEEP
 
@@ -508,7 +504,7 @@ rsource "src/boot/Kconfig"
 
 menu "Initialization Priorities"
 
-if USB_DEVICE_STACK
+if USB_DEVICE_STACK_NEXT
 
 config ZMK_USB_INIT_PRIORITY
     int "USB Init Priority"
@@ -578,9 +574,8 @@ endif
 config ZMK_USB_LOGGING
     bool "Enable USB CDC ACM logging to help debug"
     select LOG
-    select USB
-    select USB_DEVICE_STACK
-    select USB_CDC_ACM
+    select USB_DEVICE_STACK_NEXT
+    select USBD_CDC_ACM_CLASS
     select SERIAL
     select CONSOLE
     select UART_INTERRUPT_DRIVEN
@@ -686,9 +681,6 @@ config KERNEL_BIN_NAME
 
 config REBOOT
     default y
-
-config USB_DEVICE_STACK
-    default y if HAS_HW_NRF_USBD
 
 config FPU
     default CPU_HAS_FPU

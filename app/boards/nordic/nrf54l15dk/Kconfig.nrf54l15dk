@@ -1,0 +1,9 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config BOARD_NRF54L15DK
+    # The base Zephyr board gates its SoC select on the non-variant qualifier
+    # symbol (BOARD_NRF54L15DK_NRF54L15_CPUAPP), which the /zmk variant does not
+    # set, so re-select the SoC for the variant or nothing Nordic gets pulled in.
+    select SOC_NRF54L15_CPUAPP if BOARD_NRF54L15DK_NRF54L15_CPUAPP_ZMK
+    select ZMK_BOARD_COMPAT if BOARD_NRF54L15DK_NRF54L15_CPUAPP_ZMK

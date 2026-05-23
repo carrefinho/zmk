@@ -1,0 +1,33 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+# A board variant defconfig REPLACES the base board defconfig rather than
+# merging with it, so the platform-critical options the base
+# nrf54l15dk_nrf54l15_cpuapp_defconfig sets must be re-stated here or the SoC
+# stalls at boot: GRTC syscounter (system clock), cache management, and the
+# null-pointer-detection mode (MPU-based detection can't be used as 0x0-0x400
+# is unmapped on this target).
+CONFIG_NRF_GRTC_START_SYSCOUNTER=y
+CONFIG_CACHE_MANAGEMENT=y
+CONFIG_EXTERNAL_CACHE=y
+CONFIG_NULL_POINTER_EXCEPTION_DETECTION_NONE=y
+
+# Enable MPU
+CONFIG_ARM_MPU=y
+
+# Enable hardware stack protection
+CONFIG_HW_STACK_PROTECTION=y
+
+# enable GPIO
+CONFIG_GPIO=y
+
+# HID Transport (nRF54L15 has no USB device controller; BLE only)
+CONFIG_ZMK_BLE=y
+
+# Settings storage
+CONFIG_MPU_ALLOW_FLASH_WRITE=y
+CONFIG_NVS=y
+CONFIG_SETTINGS_NVS=y
+CONFIG_FLASH=y
+CONFIG_FLASH_PAGE_LAYOUT=y
+CONFIG_FLASH_MAP=y

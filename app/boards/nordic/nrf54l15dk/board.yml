@@ -1,0 +1,5 @@
+board:
+  extend: nrf54l15dk
+  variants:
+    - name: zmk
+      qualifier: nrf54l15/cpuapp

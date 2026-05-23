@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2026 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <../boards/nordic/nrf54l15dk/nrf54l15dk_nrf54l15_cpuapp.dts>
+
+/*
+ * Disable the DK's external SPI-NOR flash (spi00). ZMK keeps settings in
+ * internal RRAM (storage_partition), so it is unused; but enabling the flash
+ * subsystem makes Zephyr probe it at boot, the probe fails (no/again chip:
+ * "Device id 00 00 00"), and SPIM00 is left clocked -- a ~170uA sleep floor
+ * that dominates the subrated idle/dormant tiers. The bare subrate sample
+ * (no NVS/flash) never hit this and measured ~4.5uA dormant on this SoC.
+ */
+&mx25r64 {
+    status = "disabled";
+};
+
+&spi00 {
+    status = "disabled";
+};

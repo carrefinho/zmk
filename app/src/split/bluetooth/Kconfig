@@ -102,6 +102,97 @@ config BT_GAP_AUTO_UPDATE_CONN_PARAMS
 
 endif # !ZMK_SPLIT_ROLE_CENTRAL
 
+menuconfig ZMK_SPLIT_BLE_SUBRATING
+    bool "LE Connection Subrating on the split link [EXPERIMENTAL]"
+    select EXPERIMENTAL
+    select BT_SUBRATING
+    help
+      Enable Bluetooth LE Connection Subrating (Core 5.3) on the split
+      central<->peripheral connection. The central drives a three-tier subrate
+      ladder (active -> idle -> dormant) off keyboard activity, thinning out its
+      connection events as the keyboard goes quiet so it drops toward
+      peripheral-latency-class power. Requires a controller with
+      BT_CTLR_SUBRATING support.
+
+if ZMK_SPLIT_BLE_SUBRATING && ZMK_SPLIT_ROLE_CENTRAL
+
+# Central-driven tier ladder. A factor of 1 disables subrating for that tier.
+
+config ZMK_SPLIT_BLE_SUBRATE_TIMEOUT
+    int "Supervision timeout while subrated (10ms units)"
+    default 800
+    range 10 3200
+
+config ZMK_SPLIT_BLE_SUBRATE_DORMANT_DELAY
+    int "Milliseconds of idle before dropping to the dormant tier"
+    default 900000
+    range 10000 3600000
+
+# ACTIVE tier (keyboard in use)
+config ZMK_SPLIT_BLE_SUBRATE_ACTIVE_MIN
+    int "Active subrate factor minimum"
+    default 1
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_ACTIVE_MAX
+    int "Active subrate factor maximum"
+    default 2
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_ACTIVE_CN
+    int "Active continuation number"
+    default 1
+    range 0 499
+
+config ZMK_SPLIT_BLE_SUBRATE_ACTIVE_MAX_LATENCY
+    int "Active maximum peripheral latency"
+    default 15
+    range 0 499
+
+# IDLE tier (briefly quiet)
+config ZMK_SPLIT_BLE_SUBRATE_IDLE_MIN
+    int "Idle subrate factor minimum"
+    default 1
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_IDLE_MAX
+    int "Idle subrate factor maximum"
+    default 15
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_IDLE_CN
+    int "Idle continuation number"
+    default 14
+    range 0 499
+
+config ZMK_SPLIT_BLE_SUBRATE_IDLE_MAX_LATENCY
+    int "Idle maximum peripheral latency"
+    default 2
+    range 0 499
+
+# DORMANT tier (long idle)
+config ZMK_SPLIT_BLE_SUBRATE_DORMANT_MIN
+    int "Dormant subrate factor minimum"
+    default 1
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_DORMANT_MAX
+    int "Dormant subrate factor maximum"
+    default 80
+    range 1 500
+
+config ZMK_SPLIT_BLE_SUBRATE_DORMANT_CN
+    int "Dormant continuation number"
+    default 20
+    range 0 499
+
+config ZMK_SPLIT_BLE_SUBRATE_DORMANT_MAX_LATENCY
+    int "Dormant maximum peripheral latency"
+    default 0
+    range 0 499
+
+endif # ZMK_SPLIT_BLE_SUBRATING && ZMK_SPLIT_ROLE_CENTRAL
+
 endmenu
 
 endif # ZMK_SPLIT_BLE

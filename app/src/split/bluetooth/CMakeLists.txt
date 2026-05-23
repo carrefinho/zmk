@@ -12,3 +12,7 @@ endif()
 if (CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_PROXY)
   target_sources(app PRIVATE central_bas_proxy.c)
 endif()
+
+if (CONFIG_ZMK_SPLIT_BLE_SUBRATING)
+  target_sources(app PRIVATE subrating.c)
+endif()

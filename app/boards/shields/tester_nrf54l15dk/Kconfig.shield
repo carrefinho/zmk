@@ -1,0 +1,8 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config SHIELD_TESTER_NRF54L15DK_LEFT
+    def_bool $(shields_list_contains,tester_nrf54l15dk_left)
+
+config SHIELD_TESTER_NRF54L15DK_RIGHT
+    def_bool $(shields_list_contains,tester_nrf54l15dk_right)

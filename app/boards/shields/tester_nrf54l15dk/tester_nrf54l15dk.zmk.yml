@@ -1,0 +1,10 @@
+file_format: "1"
+id: tester_nrf54l15dk
+name: nRF54L15 DK Subrating Split Tester
+type: shield
+url: https://www.nordicsemi.com/Products/Development-hardware/nRF54L15-DK
+features:
+  - keys
+siblings:
+  - tester_nrf54l15dk_left
+  - tester_nrf54l15dk_right

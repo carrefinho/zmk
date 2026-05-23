@@ -1,0 +1,42 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if SHIELD_TESTER_NRF54L15DK_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "L15 DK Subrate"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_TESTER_NRF54L15DK_LEFT || SHIELD_TESTER_NRF54L15DK_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+# This is a subrating test shield: exercise the feature out of the box.
+config ZMK_SPLIT_BLE_SUBRATING
+    default y
+
+endif
+
+# Logging on the PERIPHERAL only, so the central stays clean for current
+# measurement. The peripheral's subrate_changed callback still logs the factor
+# the central drives. Widen to `_LEFT || _RIGHT` to also log on the central.
+if SHIELD_TESTER_NRF54L15DK_RIGHT
+
+config SERIAL
+    default y
+
+config CONSOLE
+    default y
+
+config UART_CONSOLE
+    default y
+
+config LOG
+    default y
+
+endif

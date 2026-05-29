@@ -29,6 +29,25 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 const struct zmk_split_transport_peripheral *active_transport;
 
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_STATS)
+#include <zephyr/sys/atomic.h>
+static atomic_t stats_calls;
+static atomic_t stats_drops;
+static void stats_work_cb(struct k_work *work);
+static K_WORK_DELAYABLE_DEFINE(stats_work, stats_work_cb);
+static void stats_work_cb(struct k_work *work) {
+    uint32_t calls = (uint32_t)atomic_set(&stats_calls, 0);
+    uint32_t drops = (uint32_t)atomic_set(&stats_drops, 0);
+    LOG_INF("split-tx: %u/s forwarded, %u/s dropped, %u/s sent", calls, drops, calls - drops);
+    k_work_reschedule(&stats_work, K_SECONDS(1));
+}
+static int stats_init(void) {
+    k_work_reschedule(&stats_work, K_SECONDS(1));
+    return 0;
+}
+SYS_INIT(stats_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+#endif /* CONFIG_ZMK_SPLIT_PERIPHERAL_STATS */
+
 int zmk_split_transport_peripheral_command_handler(
     const struct zmk_split_transport_peripheral *transport,
     struct zmk_split_transport_central_command cmd) {
@@ -79,7 +98,14 @@ int zmk_split_peripheral_report_event(const struct zmk_split_transport_periphera
         return -ENODEV;
     }
 
-    return active_transport->api->report_event(event);
+    int err = active_transport->api->report_event(event);
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_STATS)
+    atomic_inc(&stats_calls);
+    if (err) {
+        atomic_inc(&stats_drops);
+    }
+#endif
+    return err;
 }
 
 static int select_first_available_transport(void) {

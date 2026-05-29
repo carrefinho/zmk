@@ -180,6 +180,7 @@ int update_advertising(void) {
     struct bt_conn *conn;
     enum advertising_type desired_adv = ZMK_ADV_NONE;
 
+#if IS_ENABLED(CONFIG_ZMK_BLE_HID_ADVERTISING)
     if (zmk_ble_active_profile_is_open()) {
         desired_adv = ZMK_ADV_CONN;
     } else if (!zmk_ble_active_profile_is_connected()) {
@@ -192,6 +193,7 @@ int update_advertising(void) {
         // LOG_DBG("Directed advertising to %s", addr_str);
         // desired_adv = ZMK_ADV_DIR;
     }
+#endif /* CONFIG_ZMK_BLE_HID_ADVERTISING */
     LOG_DBG("advertising from %d to %d", advertising_status, desired_adv);
 
     switch (desired_adv + CURR_ADV(advertising_status)) {

@@ -37,7 +37,7 @@ struct syn_button {
 };
 
 struct syn_mouse_config {
-    uint16_t poll_period_ms;
+    uint16_t poll_period_us;
     int16_t step;
     int16_t amplitude;
     bool start_enabled;
@@ -45,7 +45,7 @@ struct syn_mouse_config {
 
 struct syn_mouse_data {
     const struct device *dev;
-    struct k_work_delayable work;
+    struct k_timer gen_timer;
     struct syn_button toggle;
     struct syn_button left;
     struct syn_button right;
@@ -54,15 +54,14 @@ struct syn_mouse_data {
     volatile bool enabled;
 };
 
-static void syn_mouse_work_cb(struct k_work *work) {
-    struct k_work_delayable *dwork = CONTAINER_OF(work, struct k_work_delayable, work);
-    struct syn_mouse_data *data = CONTAINER_OF(dwork, struct syn_mouse_data, work);
+/* Hardware-timed (ISR), so the period is exact and off the system workqueue --
+ * a k_work reschedule drifts by the work duration + syswq contention, which
+ * capped the effective rate ~10% below the configured period.
+ */
+static void syn_gen_timer_fn(struct k_timer *timer) {
+    struct syn_mouse_data *data = k_timer_user_data_get(timer);
     const struct device *dev = data->dev;
     const struct syn_mouse_config *cfg = dev->config;
-
-    if (!data->enabled) {
-        return;
-    }
 
     int16_t d = cfg->step * data->dir;
 
@@ -74,8 +73,12 @@ static void syn_mouse_work_cb(struct k_work *work) {
     if ((data->pos >= cfg->amplitude) || (data->pos <= -cfg->amplitude)) {
         data->dir = -data->dir;
     }
+}
 
-    k_work_schedule(&data->work, K_MSEC(cfg->poll_period_ms));
+static void syn_gen_start(struct syn_mouse_data *data) {
+    const struct syn_mouse_config *cfg = data->dev->config;
+
+    k_timer_start(&data->gen_timer, K_USEC(cfg->poll_period_us), K_USEC(cfg->poll_period_us));
 }
 
 static void syn_button_isr(const struct device *port, struct gpio_callback *cb, uint32_t pins) {
@@ -93,7 +96,9 @@ static void syn_button_isr(const struct device *port, struct gpio_callback *cb, 
 
         data->enabled = !data->enabled;
         if (data->enabled) {
-            k_work_schedule(&data->work, K_NO_WAIT);
+            syn_gen_start(data);
+        } else {
+            k_timer_stop(&data->gen_timer);
         }
     } else {
         int pressed = gpio_pin_get_dt(&btn->gpio);
@@ -135,7 +140,8 @@ static int syn_mouse_init(const struct device *dev) {
     data->dir = 1;
     data->enabled = cfg->start_enabled;
 
-    k_work_init_delayable(&data->work, syn_mouse_work_cb);
+    k_timer_init(&data->gen_timer, syn_gen_timer_fn, NULL);
+    k_timer_user_data_set(&data->gen_timer, data);
 
     ret = syn_button_setup(&data->toggle, dev, SYN_TOGGLE_CODE, GPIO_INT_EDGE_TO_ACTIVE);
     ret = ret ? ret : syn_button_setup(&data->left, dev, INPUT_BTN_0, GPIO_INT_EDGE_BOTH);
@@ -145,10 +151,10 @@ static int syn_mouse_init(const struct device *dev) {
     }
 
     if (data->enabled) {
-        k_work_schedule(&data->work, K_MSEC(cfg->poll_period_ms));
+        syn_gen_start(data);
     }
 
-    LOG_INF("synthetic-mouse: period=%ums step=%d amp=%d enabled=%d", cfg->poll_period_ms,
+    LOG_INF("synthetic-mouse: period=%uus step=%d amp=%d enabled=%d", cfg->poll_period_us,
             cfg->step, cfg->amplitude, data->enabled);
     return 0;
 }
@@ -160,7 +166,7 @@ static int syn_mouse_init(const struct device *dev) {
         .right = {.gpio = GPIO_DT_SPEC_INST_GET_OR(n, right_click_gpios, {0})},                    \
     };                                                                                             \
     static const struct syn_mouse_config syn_mouse_cfg_##n = {                                     \
-        .poll_period_ms = DT_INST_PROP(n, poll_period_ms),                                         \
+        .poll_period_us = DT_INST_PROP(n, poll_period_us),                                         \
         .step = DT_INST_PROP(n, step),                                                             \
         .amplitude = DT_INST_PROP(n, amplitude),                                                   \
         .start_enabled = DT_INST_PROP(n, start_enabled),                                           \

@@ -25,6 +25,24 @@
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
+#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_RATE_STATS)
+#include <zephyr/sys/atomic.h>
+static atomic_t hid_mouse_reports;
+static void hid_stats_work_cb(struct k_work *work);
+static K_WORK_DELAYABLE_DEFINE(hid_stats_work, hid_stats_work_cb);
+static void hid_stats_work_cb(struct k_work *work) {
+    uint32_t n = (uint32_t)atomic_set(&hid_mouse_reports, 0);
+
+    LOG_INF("hid-mouse: %u reports/s sent to host", n);
+    k_work_reschedule(&hid_stats_work, K_SECONDS(1));
+}
+static int hid_stats_init(void) {
+    k_work_reschedule(&hid_stats_work, K_SECONDS(1));
+    return 0;
+}
+SYS_INIT(hid_stats_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+#endif /* CONFIG_ZMK_HID_REPORT_RATE_STATS */
+
 // Name of the subtree for endpoint-related settings
 #define SETTING_SUBTREE "endpoints"
 
@@ -263,6 +281,9 @@ int zmk_endpoint_send_report(uint16_t usage_page) {
 
 #if IS_ENABLED(CONFIG_ZMK_POINTING)
 int zmk_endpoint_send_mouse_report() {
+#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_RATE_STATS)
+    atomic_inc(&hid_mouse_reports);
+#endif
     switch (current_instance.transport) {
     case ZMK_TRANSPORT_NONE:
         return 0;

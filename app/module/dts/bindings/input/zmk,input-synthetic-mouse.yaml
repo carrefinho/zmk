@@ -9,10 +9,14 @@ description: |
 compatible: "zmk,input-synthetic-mouse"
 
 properties:
-  poll-period-ms:
+  poll-period-us:
     type: int
-    default: 1
-    description: Milliseconds between generated movement reports.
+    default: 1250
+    description: |
+      Microseconds between generated movement reports. Match this to the link's
+      connection interval (1250us for the 1.25ms SCI link) so each tick maps to
+      one connection event -- generating faster just beats against the link and
+      coalesces/drops reports.
   step:
     type: int
     default: 1

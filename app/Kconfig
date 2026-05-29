@@ -171,6 +171,15 @@ menuconfig ZMK_BLE
 
 if ZMK_BLE
 
+config ZMK_BLE_HID_ADVERTISING
+    bool "Advertise the HID profile over BLE"
+    default y
+    help
+      Advertise the keyboard/mouse HID profile so a host can connect over BLE.
+      Disable on a USB-only central/dongle: BLE is still used for the split link
+      (central role), but the radio is no longer spent advertising a HID profile
+      that will never be used -- freeing radio time for the split connection.
+
 config ZMK_BLE_EXPERIMENTAL_CONN
     bool "Experimental BLE connection changes"
     help
@@ -556,6 +565,14 @@ config ZMK_LOG_LEVEL
     default 4
 
 endif
+
+config ZMK_HID_REPORT_RATE_STATS
+    bool "Log HID mouse report rate to the host once per second [DEBUG]"
+    help
+      Instruments zmk_endpoint_send_mouse_report with a per-second counter of
+      mouse reports sent to the host (USB/BLE), to confirm the effective host
+      report rate end-to-end. One aggregate log line per second (no per-report
+      logging).
 
 config ZMK_USB_LOGGING
     bool "Enable USB CDC ACM logging to help debug"

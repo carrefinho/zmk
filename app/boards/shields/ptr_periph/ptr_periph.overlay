@@ -47,10 +47,15 @@
     synth_mouse: synth_mouse {
         compatible = "zmk,input-synthetic-mouse";
         status = "okay";
-        poll-period-ms = <1>;
+        /* Matched to the 1.25 ms SCI link: 1 tick -> 1 connection event -> 1
+         * report. Generating faster (e.g. 1000 us / 1 kHz) beats against the
+         * 800 Hz link and coalesces/drops, capping the host rate near 700. */
+        poll-period-us = <1250>;
         step = <1>;
         amplitude = <200>;
-        start-enabled;
+        /* Boot stopped: press button 0 to start the sweep once the link is up
+         * at 1.25 ms (avoids flooding the link during connect + SCI setup, and
+         * avoids hijacking the host cursor on plug-in). */
         toggle-gpios = <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         left-click-gpios = <&gpio1 8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
         right-click-gpios = <&gpio0 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;

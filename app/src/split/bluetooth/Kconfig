@@ -116,6 +116,13 @@ config ZMK_SPLIT_BLE_SCI
       a controller with BT_CTLR_SHORTER_CONNECTION_INTERVALS support. Set on both
       halves (the configs apply to both; the driving logic is central-only).
 
+config ZMK_SPLIT_PERIPHERAL_STATS
+    bool "Log split-peripheral event TX rate/drops once per second [DEBUG]"
+    help
+      Instruments zmk_split_peripheral_report_event with per-second counters of
+      events forwarded vs dropped (bt_gatt_notify -ENOMEM when the TX pool is
+      exhausted), to find where a high-rate input stream saturates the link.
+
 menuconfig ZMK_SPLIT_BLE_SUBRATING
     bool "LE Connection Subrating on the split link [EXPERIMENTAL]"
     select EXPERIMENTAL

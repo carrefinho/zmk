@@ -1,0 +1,8 @@
+file_format: "1"
+id: ptr_periph
+name: SCI Pointing Peripheral (nRF54L15 DK)
+type: shield
+url: https://www.nordicsemi.com/Products/Development-hardware/nRF54L15-DK
+features:
+  - keys
+  - pointer

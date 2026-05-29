@@ -4,3 +4,4 @@
 zephyr_library_amend()
 
 zephyr_library_sources_ifdef(CONFIG_ZMK_INPUT_MOCK input_mock.c)
+zephyr_library_sources_ifdef(CONFIG_ZMK_INPUT_SYNTHETIC_MOUSE input_synthetic_mouse.c)

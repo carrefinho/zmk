@@ -6,4 +6,9 @@ config ZMK_INPUT_MOCK
     default y
     depends on DT_HAS_ZMK_INPUT_MOCK_ENABLED
 
+config ZMK_INPUT_SYNTHETIC_MOUSE
+    bool "Synthetic mouse (SCI pointing test)"
+    default y
+    depends on DT_HAS_ZMK_INPUT_SYNTHETIC_MOUSE_ENABLED
+
 endif

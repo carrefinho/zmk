@@ -7,11 +7,13 @@ manifest:
     - name: carrefinho
       url-base: https://github.com/carrefinho
   projects:
-    # LE Connection Subrating: fork of zmkfirmware/zephyr@v4.1.0+zmk-fixes that
-    # adds the BT_CTLR_SUBRATING implementation to the LL_SW split controller.
+    # LE Connection Subrating + Shorter Connection Intervals (RCV): fork of
+    # zmkfirmware/zephyr@v4.1.0+zmk-fixes. The sci-rcv branch adds the SCI
+    # Connection Rate procedure (1.25 ms) + LL Extended Feature Set on top of
+    # the BT_CTLR_SUBRATING LL_SW controller.
     - name: zephyr
       remote: carrefinho
-      revision: v4.1.0+zmk+subrating
+      revision: sci-rcv
       clone-depth: 1
       import:
         name-blocklist:

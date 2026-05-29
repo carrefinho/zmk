@@ -1,0 +1,35 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Synthetic pointing device for SCI pointing tests: a diagonal triangle-wave of
+  relative movement plus mouse buttons driven from board buttons. All output
+  goes through the Zephyr input subsystem (forwardable over zmk,input-split).
+
+compatible: "zmk,input-synthetic-mouse"
+
+properties:
+  poll-period-ms:
+    type: int
+    default: 1
+    description: Milliseconds between generated movement reports.
+  step:
+    type: int
+    default: 1
+    description: Per-report movement on each of X and Y (diagonal).
+  amplitude:
+    type: int
+    default: 200
+    description: Accumulated position at which the sweep reverses direction.
+  start-enabled:
+    type: boolean
+    description: Start emitting immediately at boot (else wait for the toggle).
+  toggle-gpios:
+    type: phandle-array
+    description: Active-edge GPIO that toggles the movement stream on/off.
+  left-click-gpios:
+    type: phandle-array
+    description: GPIO reported as INPUT_BTN_0 (left click) on press/release.
+  right-click-gpios:
+    type: phandle-array
+    description: GPIO reported as INPUT_BTN_1 (right click) on press/release.

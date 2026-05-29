@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2026 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * nRF54L15 DK as a split pointing peripheral for the SCI test. A synthetic
+ * mouse sweeps diagonally and forwards over the split link via input-split;
+ * the on-board buttons drive it:
+ *   button0 (sw0, gpio1 13): toggle the movement stream
+ *   button2 (sw2, gpio1  8): left click  (INPUT_BTN_0)
+ *   button3 (sw3, gpio0  4): right click (INPUT_BTN_1)
+ * The kscan stays empty -- all input goes through the input subsystem, so no
+ * keymap/position handling is involved.
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {
+    chosen {
+        zmk,kscan = &mock_kscan;
+    };
+
+    mock_kscan: kscan_mock {
+        compatible = "zmk,kscan-mock";
+        columns = <1>;
+        rows = <0>;
+        events = <>;
+    };
+
+    splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        split_input: split_input@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+            device = <&synth_mouse>;
+        };
+    };
+
+    split_listener: split_listener {
+        compatible = "zmk,input-listener";
+        status = "disabled";
+        device = <&split_input>;
+    };
+
+    synth_mouse: synth_mouse {
+        compatible = "zmk,input-synthetic-mouse";
+        status = "okay";
+        poll-period-ms = <1>;
+        step = <1>;
+        amplitude = <200>;
+        start-enabled;
+        toggle-gpios = <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        left-click-gpios = <&gpio1 8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        right-click-gpios = <&gpio0 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    };
+};

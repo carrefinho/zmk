@@ -1,0 +1,33 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if SHIELD_PTR_DONGLE
+
+config ZMK_KEYBOARD_NAME
+    default "SCI Ptr Dongle"
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+# Receive pointing over the split link and emit it as USB HID.
+config ZMK_POINTING
+    default y
+
+config ZMK_INPUT_SPLIT
+    default y
+
+config ZMK_USB
+    default y
+
+# Drive the split link to 1.25 ms / factor 1 via the Connection Rate procedure.
+config ZMK_SPLIT_BLE_SCI
+    default y
+
+# Logging over USB CDC ACM (the XIAO has no debug VCOM) for the latency metric.
+config ZMK_USB_LOGGING
+    default y
+
+endif

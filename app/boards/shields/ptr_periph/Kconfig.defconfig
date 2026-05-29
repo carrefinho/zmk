@@ -1,0 +1,36 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if SHIELD_PTR_PERIPH
+
+config ZMK_KEYBOARD_NAME
+    default "SCI Ptr Periph"
+
+config ZMK_SPLIT
+    default y
+
+# Pointing + forward input over the split link to the central.
+config ZMK_POINTING
+    default y
+
+config ZMK_INPUT_SPLIT
+    default y
+
+# Drive (well, accept) the 1.25 ms SCI link, factor 1.
+config ZMK_SPLIT_BLE_SCI
+    default y
+
+# Console/logging on the peripheral (DK has a VCOM).
+config SERIAL
+    default y
+
+config CONSOLE
+    default y
+
+config UART_CONSOLE
+    default y
+
+config LOG
+    default y
+
+endif

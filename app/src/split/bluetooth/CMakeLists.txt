@@ -16,3 +16,7 @@ endif()
 if (CONFIG_ZMK_SPLIT_BLE_SUBRATING)
   target_sources(app PRIVATE subrating.c)
 endif()
+
+if (CONFIG_ZMK_SPLIT_BLE_SCI AND CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+  target_sources(app PRIVATE sci.c)
+endif()

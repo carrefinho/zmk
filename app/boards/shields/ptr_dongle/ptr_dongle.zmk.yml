@@ -1,0 +1,8 @@
+file_format: "1"
+id: ptr_dongle
+name: SCI Pointing Dongle (XIAO BLE central)
+type: shield
+url: https://wiki.seeedstudio.com/XIAO_BLE/
+features:
+  - keys
+  - pointer

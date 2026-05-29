@@ -102,6 +102,20 @@ config BT_GAP_AUTO_UPDATE_CONN_PARAMS
 
 endif # !ZMK_SPLIT_ROLE_CENTRAL
 
+config ZMK_SPLIT_BLE_SCI
+    bool "Shorter Connection Intervals (1.25 ms) on the split link [EXPERIMENTAL]"
+    select EXPERIMENTAL
+    select BT_SHORTER_CONNECTION_INTERVALS
+    select BT_SUBRATING
+    select BT_LE_EXTENDED_FEAT_SET
+    help
+      Drive the split central<->peripheral link to a 1.25 ms connection interval
+      via the Bluetooth 6.2 Shorter Connection Intervals (RCV) Connection Rate
+      Update procedure, pinned at subrate factor 1 (no subrating tiers). The
+      central initiates the procedure after the page-1 feature exchange. Requires
+      a controller with BT_CTLR_SHORTER_CONNECTION_INTERVALS support. Set on both
+      halves (the configs apply to both; the driving logic is central-only).
+
 menuconfig ZMK_SPLIT_BLE_SUBRATING
     bool "LE Connection Subrating on the split link [EXPERIMENTAL]"
     select EXPERIMENTAL

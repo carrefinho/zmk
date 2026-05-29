@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2026 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * XIAO BLE as a USB-HID split central ("dongle") for the SCI pointing test.
+ * No physical keys (mock kscan); it receives the peripheral's synthetic mouse
+ * over input-split and emits it as USB HID, and drives the split link to
+ * 1.25 ms via SCI (see app/src/split/bluetooth/sci.c).
+ */
+
+/ {
+    chosen {
+        zmk,kscan = &mock_kscan;
+    };
+
+    mock_kscan: kscan_mock {
+        compatible = "zmk,kscan-mock";
+        columns = <1>;
+        rows = <0>;
+        events = <>;
+    };
+
+    splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        split_input: split_input@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+        };
+    };
+
+    split_listener: split_listener {
+        compatible = "zmk,input-listener";
+        status = "okay";
+        device = <&split_input>;
+    };
+};

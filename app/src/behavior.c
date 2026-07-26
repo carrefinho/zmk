@@ -22,6 +22,7 @@
 #endif
 
 #include <drivers/behavior.h>
+#include <zmk/stdlib.h>
 #include <zmk/behavior.h>
 #include <zmk/hid.h>
 #include <zmk/matrix.h>
@@ -307,7 +308,7 @@ static int behavior_handle_set(const char *name, size_t len, settings_read_cb re
 
     if (settings_name_steq(name, "local_id", &next) && next) {
         char *endptr;
-        zmk_behavior_local_id_t local_id = strtoul(next, &endptr, 10);
+        zmk_behavior_local_id_t local_id = zmk_parse_udec(next, &endptr);
         if (*endptr != '\0') {
             LOG_WRN("Invalid behavior local ID: %s with endptr %s", next, endptr);
             return -EINVAL;

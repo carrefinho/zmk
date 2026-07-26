@@ -88,19 +88,56 @@ bool zmk_endpoint_instance_eq(struct zmk_endpoint_instance a, struct zmk_endpoin
     return false;
 }
 
+/* Bounded copy with snprintf's return semantics (length that *would* have been
+ * written). Used instead of snprintf below: this is the only snprintf call in
+ * the tree on a USB-only build, and it alone drags picolibc's tinystdio
+ * vfprintf machinery (~2 KB) into the image. That is unaffordable on a 62 KB
+ * part like the CH32X035.
+ */
+static int endpoint_str_copy(char *str, size_t len, const char *src) {
+    size_t src_len = strlen(src);
+
+    if (len > 0) {
+        size_t copied = MIN(src_len, len - 1);
+
+        memcpy(str, src, copied);
+        str[copied] = '\0';
+    }
+
+    return (int)src_len;
+}
+
 int zmk_endpoint_instance_to_str(struct zmk_endpoint_instance endpoint, char *str, size_t len) {
     switch (endpoint.transport) {
     case ZMK_TRANSPORT_NONE:
-        return snprintf(str, len, "None");
+        return endpoint_str_copy(str, len, "None");
 
     case ZMK_TRANSPORT_USB:
-        return snprintf(str, len, "USB");
+        return endpoint_str_copy(str, len, "USB");
 
-    case ZMK_TRANSPORT_BLE:
-        return snprintf(str, len, "BLE:%d", endpoint.ble.profile_index);
+    case ZMK_TRANSPORT_BLE: {
+        /* "BLE:" + at most 3 digits + NUL; profile_index is a uint8_t. */
+        char buf[8] = "BLE:";
+        uint8_t idx = endpoint.ble.profile_index;
+        char digits[3];
+        int n = 0;
+        int pos = 4;
+
+        do {
+            digits[n++] = (char)('0' + (idx % 10));
+            idx /= 10;
+        } while (idx > 0);
+
+        while (n > 0) {
+            buf[pos++] = digits[--n];
+        }
+        buf[pos] = '\0';
+
+        return endpoint_str_copy(str, len, buf);
+    }
 
     default:
-        return snprintf(str, len, "Invalid");
+        return endpoint_str_copy(str, len, "Invalid");
     }
 }
 

@@ -23,3 +23,19 @@ size_t strlcpy(char *dst, const char *src, size_t size) {
     }
     return len;
 }
+
+unsigned long zmk_parse_udec(const char *str, char **endptr) {
+    unsigned long val = 0;
+    const char *p = str;
+
+    while (*p >= '0' && *p <= '9') {
+        val = (val * 10UL) + (unsigned long)(*p - '0');
+        p++;
+    }
+
+    if (endptr != NULL) {
+        *endptr = (char *)p;
+    }
+
+    return val;
+}

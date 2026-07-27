@@ -131,6 +131,8 @@ static bool rpc_tx_buffer_write(pb_ostream_t *stream, const uint8_t *buf, size_t
         uint32_t claim_len = ring_buf_put_claim(&rpc_tx_buf, &write_buf, count - written);
 
         if (claim_len == 0) {
+            // Buffer full: let the transport drain it before trying again.
+            k_sleep(K_MSEC(1));
             continue;
         }
 

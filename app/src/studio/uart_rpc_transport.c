@@ -130,12 +130,23 @@ static void serial_cb(const struct device *dev, void *user_data) {
             uint32_t claim_len = ring_buf_get_claim(tx_buf, &buf, tx_buf->size);
 
             if (claim_len == 0) {
-                continue;
+                break;
             }
 
             int sent = uart_fifo_fill(uart_dev, buf, claim_len);
 
             ring_buf_get_finish(tx_buf, MAX(sent, 0));
+
+            if (sent <= 0) {
+                // The FIFO is full. Spinning here deadlocks with CDC-ACM,
+                // where this callback and the FIFO drain share one work queue:
+                // stop and wait to be called back once the FIFO has room.
+                break;
+            }
+        }
+
+        if (ring_buf_size_get(tx_buf) == 0) {
+            uart_irq_tx_disable(uart_dev);
         }
     }
 }

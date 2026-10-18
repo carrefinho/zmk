@@ -61,7 +61,8 @@ echo "Running $testcase:"
 shopt -s nullglob
 for file in $(pwd)/$testcase/peripheral*.overlay ; do
     pn=$(basename -s .overlay ${file})
-    west build -d build/${testcase%%/}_${pn}/ -b nrf52_bsim//zmk_test_mock -- -DZMK_CONFIG="$(pwd)/$testcase" -DEXTRA_DTC_OVERLAY_FILE="${file}" > /dev/null 2>&1
+    mkdir -p build
+    west build -d build/${testcase%%/}_${pn}/ -b nrf52_bsim//zmk_test_mock -- -DZMK_CONFIG="$(pwd)/$testcase" -DEXTRA_DTC_OVERLAY_FILE="${file}" > "build/${testcase//\//_}_${pn}-build.log" 2>&1
 
     if [ $? -gt 0 ]; then
         echo "FAILED: $testcase peripheral ${pn} did not build" | tee -a ./build/tests/pass-fail.log
@@ -76,7 +77,7 @@ if ls $(pwd)/$testcase/peripheral*.overlay >/dev/null 2>&1; then
     extra_cmake_args="-DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y"
 fi
 
-west build -d build/$testcase -b nrf52_bsim//zmk_test_mock -- -DZMK_CONFIG="$(pwd)/$testcase" ${extra_cmake_args} > /dev/null 2>&1
+west build -d build/$testcase -b nrf52_bsim//zmk_test_mock -- -DZMK_CONFIG="$(pwd)/$testcase" ${extra_cmake_args} > "build/${testcase//\//_}-build.log" 2>&1
 if [ $? -gt 0 ]; then
     echo "FAILED: $testcase did not build" | tee -a ./build/tests/pass-fail.log
     exit 1
